@@ -41,7 +41,7 @@
         }
 
         .task-box {
-            border: 2px solid #000;
+            border: 4px solid #6b6b6b;
             padding: 15px;
             margin-top: 20px;
             border-radius: 10px;
@@ -64,13 +64,19 @@
             border-color: #333;
         }
 
-        .task-box h2 {
-            margin-bottom: 10px;
-        }
-
         .separator {
-            border-top: 2px solid #000;
+            border-top: 4px solid #6b6b6b;
             margin: 10px 0;
+        }
+        
+        .consola-text {
+            border: 2px solid gray;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            width: 300px; /* Puedes ajustar el tamaño */
         }
 
         .button {
@@ -81,44 +87,7 @@
             border-radius: 5px;
         }
 
-        .button-primary { 
-            background-color: #007bff; 
-            color: white; 
-        }
-
-        .button-secondary { 
-            background-color: #28a745; 
-            color: white; 
-        }
-
-        .button-triniti { 
-            background-color: #fb33e9; 
-            color: white;
-        }
-
-        .button-consola {
-            background-color: gray; 
-            color: white; 
-        }
-
-        .consola {
-            border: 2px solid gray;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 10px;
-            background-color: white;
-            text-align: left;
-        }
-
-        .consola-text {
-            border: 2px solid gray;
-            background-color: white;
-            color: black;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            width: 300px; /* Puedes ajustar el tamaño */
-        }        
+        .principal { background-color: #6b6b6b; color: white; }        
     </style>
 </head>
 <body>
@@ -137,14 +106,14 @@
         <div class="task-box">
             <h2>Crear lista de compras</h2>
             <p>Crea una lista de compras atravez de una plantilla</p>
-            <button class="button button-secondary" onclick="mostrarPestaña('plantilla')">Crear atravez de una plantilla</button>
+            <button class="button principal" onclick="mostrarPestaña('plantilla')">Crear atravez de una plantilla</button>
         </div>
     </div>
     
-    <!-- Pestaña del Produco: "id-1" -->
+    <!-- Pestaña del Produco: 1 -->
     <div id="id-1" class="container" style="display: none;">
         <h1>Arroz Oro - Gallo</h1>
-        <div class="consola">
+        <div class="task-box"></div>
             <p>Producto: Arroz Oro</p>
             <p>Marca: Gallo</p>
             <p>Cantidad: 15 x 1kg</p>
@@ -152,10 +121,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-2" -->
+    <!-- Pestaña del Producto: 2 -->
     <div id="id-2" class="container" style="display: none;">
         <h1>G. Agua - La Provinciana</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: G. Agua</p>
             <p>Marca: La Provinciana</p>
             <p>Cantidad: 14 x 3</p>
@@ -163,10 +132,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-3" -->
+    <!-- Pestaña del Producto: 3 -->
     <div id="id-3" class="container" style="display: none;">
         <h1>Matecodico - Nobleza Gaucha</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Matecodico</p>
             <p>Marca: Nobleza Gaucha</p>
             <p>Cantidad: 7 x 50</p>
@@ -174,10 +143,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-4" -->
+    <!-- Pestaña del Producto: 4 -->
     <div id="id-4" class="container" style="display: none;">
         <h1>Kesitas</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Kesitas</p>
             <p>Marca: No disponible</p>
             <p>Cantidad: 7 x 125gr</p>
@@ -185,10 +154,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-5" -->
+    <!-- Pestaña del Producto: 5 -->
     <div id="id-5" class="container" style="display: none;">
         <h1>Yerba - Union</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Yerba</p>
             <p>Marca: Union</p>
             <p>Cantidad: 26 x 500gr</p>
@@ -196,10 +165,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-6" -->
+    <!-- Pestaña del Producto: 6 -->
     <div id="id-6" class="container" style="display: none;">
         <h1>Yerba - Amanda</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Yerba</p>
             <p>Marca: Amanda</p>
             <p>Cantidad: 7 x 500gr</p>
@@ -207,10 +176,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-7" -->
+    <!-- Pestaña del Producto: 7 -->
     <div id="id-7" class="container" style="display: none;">
         <h1>Arroz - Molinos Ala</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Arroz</p>
             <p>Marca: Molinos Ala</p>
             <p>Cantidad: 8 x 1kg</p>
@@ -218,10 +187,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-8" -->
+    <!-- Pestaña del Producto: 8 -->
     <div id="id-8" class="container" style="display: none;">
         <h1>Lentejas</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Lentejas</p>
             <p>Marca: No disponible</p>
             <p>Cantidad: 10 x 400gr</p>
@@ -229,10 +198,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-9" -->
+    <!-- Pestaña del Producto: 9 -->
     <div id="id-9" class="container" style="display: none;">
         <h1>Azucar - Domino</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Azucar</p>
             <p>Marca: Domino</p>
             <p>Cantidad: 20 x 1kg</p>
@@ -240,10 +209,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-10" -->
+    <!-- Pestaña del Producto: 10 -->
     <div id="id-10" class="container" style="display: none;">
         <h1>Azucar - La Principal</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Azucar</p>
             <p>Marca: La Principal</p>
             <p>Cantidad: 5 x 1kg</p>
@@ -251,10 +220,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-11" -->
+    <!-- Pestaña del Producto: 11 -->
     <div id="id-11" class="container" style="display: none;">
         <h1>Harina 000 - BlancaFlor</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Harina 000</p>
             <p>Marca: BlancaFlor</p>
             <p>Cantidad: 6 x 1kg</p>
@@ -262,10 +231,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-12" -->
+    <!-- Pestaña del Producto: 12 -->
     <div id="id-12" class="container" style="display: none;">
         <h1>Tostada - Manieri</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Tostada</p>
             <p>Marca: Manieri</p>
             <p>Cantidad: 4 x 200gr</p>
@@ -273,10 +242,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-13" -->
+    <!-- Pestaña del Producto: 13 -->
     <div id="id-13" class="container" style="display: none;">
         <h1>Naranja Banana - TANG</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Naranja Banana</p>
             <p>Marca: TANG</p>
             <p>Cantidad: 3 x 20</p>
@@ -284,10 +253,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-14" -->
+    <!-- Pestaña del Producto: 14 -->
     <div id="id-14" class="container" style="display: none;">
         <h1>Pera - TANG</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Pera</p>
             <p>Marca: TANG</p>
             <p>Cantidad: 1 x 20</p>
@@ -295,10 +264,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-15" -->
+    <!-- Pestaña del Producto: 15 -->
     <div id="id-15" class="container" style="display: none;">
         <h1>Limonada y Arandanos - Clight</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Limonada y Arandanos</p>
             <p>Marca: Clight</p>
             <p>Cantidad: 6 x 20</p>
@@ -306,10 +275,10 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-16" -->
+    <!-- Pestaña del Producto: 16 -->
     <div id="id-16" class="container" style="display: none;">
         <h1>Papel de Cocina - Husuares</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Papel de Cocina</p>
             <p>Marca: Husuares</p>
             <p>Cantidad: 9 x 3</p>
@@ -317,14 +286,25 @@
         </div>
     </div>
 
-    <!-- Pestaña del Producto: "id-17" -->
+    <!-- Pestaña del Producto: 17 -->
     <div id="id-17" class="container" style="display: none;">
         <h1>Fideo Resorte Colores - Matarazzo</h1>
-        <div class="consola">
+        <div class="task-box">
             <p>Producto: Fideo Resorte Colores</p>
             <p>Marca: Matarazzo</p>
             <p>Cantidad: 0 x 0</p>
             <p>Fecha de Vencimiento: <p class="fecha-no">NO ENCONTRADA</p></p>
+        </div>
+    </div>
+
+    <!-- Pestaña del Producto: 18 -->
+    <div id="id-18" class="container" style="display: none;">
+        <h1>Azucar - F. Canella</h1>
+        <div class="task-box">
+            <p>Producto: Azucar</p>
+            <p>Marca: F. Canella</p>
+            <p>Cantidad: 1kg x 20</p>
+            <p>Fecha de Vencimiento: <p class="fecha-no">NO TIENE</p></p>
         </div>
     </div>
 
@@ -335,7 +315,7 @@
             <input type="text" id="slot1" placeholder="Producto">
             <input type="text" id="slot2" placeholder="Marca">
             <input type="text" id="slot3" placeholder="Cantidad">
-            <button class="button button-primary" onclick="cargarDatos()">Cargar 📥</button>
+            <button class="button principal" onclick="cargarDatos()">Cargar 📥</button>
         </div>
         <table>
             <thead>
@@ -347,7 +327,7 @@
             </thead>
             <tbody id="tablaDatos"></tbody>
         </table>
-        <button id="plantillaBoton" class="button button-primary" onclick="generarLista('tablaDatos', 'plantillaBoton')">Generar Lista ⌨️</button>
+        <button id="plantillaBoton" class="button principal" onclick="generarLista('tablaDatos', 'plantillaBoton')">Generar Lista ⌨️</button>
     </div>
 
     <script>
@@ -415,23 +395,24 @@
     
         // Productos con IDs únicos
         const productos = [
-            { id: "id-1", nombre: "Arroz Oro - Gallo" },
-            { id: "id-2", nombre: "G. Agua - La Provinciana" },
-            { id: "id-3", nombre: "Matecodico - Nobleza Gaucha" },
-            { id: "id-4", nombre: "Kesitas" },
-            { id: "id-5", nombre: "Yerba - Union" },
-            { id: "id-6", nombre: "Yerba - Amanda" },
             { id: "id-7", nombre: "Arroz - Molinos Ala" },
-            { id: "id-8", nombre: "Lentejas" },
+            { id: "id-1", nombre: "Arroz Oro - Gallo" },
             { id: "id-9", nombre: "Azucar - Domino" },
+            { id: "id-18", nombre: "Azucar - F. Canella" },
             { id: "id-10", nombre: "Azucar - La Principal" },
+            { id: "id-17", nombre: "Fideo Resorte Colores - Matarazzo" },
+            { id: "id-2", nombre: "G. Agua - La Provinciana" },
             { id: "id-11", nombre: "Harina 000 - BlancaFlor" },
-            { id: "id-12", nombre: "Tostada - Manieri" },
-            { id: "id-13", nombre: "Naranja Banana - TANG" },
-            { id: "id-14", nombre: "Pera - TANG" },
+            { id: "id-4", nombre: "Kesitas" },
+            { id: "id-8", nombre: "Lentejas" },
             { id: "id-15", nombre: "Limonada y Arandanos - Clight" },
+            { id: "id-3", nombre: "Matecodico - Nobleza Gaucha" },
+            { id: "id-13", nombre: "Naranja Banana - TANG" },
             { id: "id-16", nombre: "Papel de Cocina - Husuares" },
-            { id: "id-17", nombre: "Fideo Resorte Colores - Matarazzo" }
+            { id: "id-14", nombre: "Pera - TANG" },
+            { id: "id-12", nombre: "Tostada - Manieri" },
+            { id: "id-6", nombre: "Yerba - Amanda" },
+            { id: "id-5", nombre: "Yerba - Union" }
         ];
    
         // Generar pestañas para cada producto
@@ -485,7 +466,7 @@
             resultados.forEach(producto => {
                 const button = document.createElement("button");
                 button.textContent = producto.nombre;
-                button.classList.add("button", "button-primary");
+                button.classList.add("button", "principal");
                 button.onclick = () => mostrarPestaña(producto.id);
                 resultadosContainer.appendChild(button);
             });
