@@ -202,6 +202,12 @@
         <img src="logo.png" width="190" height="190" alt="Logo">
         <h1>LoDePedro - Android</h1>
         <div class="task-box">
+            <video id="multiespacioVideo" width="100%" height="auto" autoplay loop muted>
+                <source src="Multiespacio.mp4" type="video/mp4">
+                Tu navegador no soporta la reproducción de videos.
+            </video>
+        </div>
+        <div class="task-box">
             <h2>Protector de Pantalla OJEDA:</h2>
             <p>Podes visitar el protector de pantalla con las imagenes de la famillia OJEDA</p>
             <button class="button button-primary" onclick="window.location.href='./protector-de-pantalla/protector-de-pantalla.html'">Ir al Protector de Pantalla</button>
@@ -280,6 +286,12 @@
             // Muestra la pestaña seleccionada
             document.getElementById(id).style.display = 'block';
         }
+
+        const video = document.getElementById('multiespacioVideo');
+            video.addEventListener('ended', () => {
+                video.currentTime = 0;
+                video.play();
+            });
     </script>
 </body>
 </html>
