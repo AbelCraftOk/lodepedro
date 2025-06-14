@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Rusa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #222;
+            color: white;
+        }
+
+        #setup-container, #game-container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 400px;
+            background: linear-gradient(135deg, #444, #222);
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: gold;
+        }
+
+        label, input {
+            margin: 10px;
+            display: block;
+        }
+
+        #players-inputs input {
+            margin-bottom: 5px;
+        }
+
+        #players {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .player {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            transition: 0.3s;
+        }   
+
+        .dead {
+            text-decoration: line-through;
+            color: red;
+            opacity: 0.5;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        #shoot-btn {
+            background: linear-gradient(135deg, red, darkred);
+        }
+
+        #pass-btn {
+            background: linear-gradient(135deg, green, darkgreen);
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Efectos */
+        @keyframes flash {
+            0% { background-color: red; }
+            100% { background-color: #222; }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .flash-effect {
+            animation: flash 0.3s ease-in-out;
+        }
+
+        .shake-effect {
+            animation: shake 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <button class="button" onclick="window.location.href='./index.html'" style="margin-bottom:15px;">Ir a Inicio</button>
+    <div id="setup-container">
+        <h1>Configurar Partida</h1>
+        <label for="num-players">Cantidad de Jugadores (2-6):</label>
+        <input type="number" id="num-players" min="2" max="6" value="4">
+        <div id="players-inputs"></div>
+        <button id="start-game">Comenzar</button>
+    </div>
+    <div id="game-container" style="display: none;">
+        <h1>Ruleta Rusa</h1>
+        <div id="players"></div>
+        <div id="controls">
+            <button id="shoot-btn">Disparar</button>
+            <button id="pass-btn">Pasar</button>
+        </div>
+        <p id="game-status"></p>
+    </div>
+    <!-- Sonidos -->
+    <audio id="spin-sound" src="spin.mp3"></audio>
+    <audio id="shot-sound" src="shot.mp3"></audio>
+    <audio id="click-sound" src="click.mp3"></audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const setupContainer = document.getElementById("setup-container");
+        const gameContainer = document.getElementById("game-container");
+        const numPlayersInput = document.getElementById("num-players");
+        const playersInputsDiv = document.getElementById("players-inputs");
+        const startGameBtn = document.getElementById("start-game");
+        const playersContainer = document.getElementById("players");
+        const statusText = document.getElementById("game-status");
+        const shootBtn = document.getElementById("shoot-btn");
+        const passBtn = document.getElementById("pass-btn");
+        const spinSound = document.getElementById("spin-sound");
+        const shotSound = document.getElementById("shot-sound");
+        const clickSound = document.getElementById("click-sound");
+        let players = [];
+        let currentPlayerIndex = 0;
+        let bulletPosition = Math.floor(Math.random() * 6);
+        let chamberPosition = 0;
+        // Genera campos de nombre de jugadores
+        numPlayersInput.addEventListener("input", () => {
+            playersInputsDiv.innerHTML = "";
+            let numPlayers = parseInt(numPlayersInput.value);
+            for (let i = 0; i < numPlayers; i++) {
+                let input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = `Nombre del Jugador ${i + 1}`;
+                playersInputsDiv.appendChild(input);
+            }
+        });
+        // Iniciar el juego
+        startGameBtn.addEventListener("click", () => {
+            let inputs = playersInputsDiv.getElementsByTagName("input");
+            players = [];
+            for (let input of inputs) {
+                if (input.value.trim() !== "") {
+                    players.push(input.value.trim());
+                }
+            }
+            if (players.length < 2) {
+                alert("Debe haber al menos 2 jugadores.");
+                return;
+            }
+            setupContainer.style.display = "none";
+            gameContainer.style.display = "block";
+            renderPlayers();
+            statusText.innerText = `Turno de ${players[currentPlayerIndex]}`;
+        });
+        function renderPlayers() {
+            playersContainer.innerHTML = "";
+            players.forEach((player, index) => {
+                let playerElement = document.createElement("div");
+                playerElement.className = "player";
+                playerElement.innerText = player;
+                if (index === currentPlayerIndex) {
+                    playerElement.style.fontWeight = "bold";
+                }
+                playersContainer.appendChild(playerElement);
+            });
+        }   
+       function nextTurn() {
+            do {
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            } while (!players[currentPlayerIndex]);
+            renderPlayers();
+            statusText.innerText = `Turno de ${players[currentPlayerIndex]}`;
+            // Reactivar los botones al cambiar de turno
+            shootBtn.disabled = false;
+            passBtn.disabled = false;
+        }
+        shootBtn.addEventListener("click", () => {
+            spinSound.play();
+            shootBtn.disabled = true;
+            passBtn.disabled = true;
+            setTimeout(() => {
+                if (chamberPosition === bulletPosition) {
+                    shotSound.play();
+                    statusText.innerText = `${players[currentPlayerIndex]} ha perdido.`;
+                    players[currentPlayerIndex] = null;
+                    document.querySelectorAll(".player")[currentPlayerIndex].classList.add("dead");
+                    document.body.classList.add("flash-effect");
+                    gameContainer.classList.add("shake-effect");
+                    setTimeout(() => {
+                        document.body.classList.remove("flash-effect");
+                        gameContainer.classList.remove("shake-effect");
+                    }, 500);
+                    if (players.filter(p => p).length === 1) {
+                        statusText.innerText = `¡${players.filter(p => p)[0]} gana!`;
+                        shootBtn.disabled = true;
+                            passBtn.disabled = true;
+                            return;
+                        }
+                    } else {
+                        clickSound.play();
+                        statusText.innerText = `${players[currentPlayerIndex]} sobrevive.`;
+                    }
+                    chamberPosition = (chamberPosition + 1) % 6;
+                    nextTurn();
+                }, 1500);
+            });
+            passBtn.addEventListener("click", () => {
+                shootBtn.disabled = true;
+                passBtn.disabled = true;
+                nextTurn();
+            });
+        });
+    </script>
+</body>
+</html>

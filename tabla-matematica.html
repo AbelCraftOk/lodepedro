@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabla de Multiplicar Interactiva</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      color: #2e7d32;
+      text-align: center;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      border: 2px solid #2e7d32;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #c8e6c9;
+      text-align: center;
+      padding: 6px;
+    }
+    th {
+      background-color: #66bb6a;
+      color: white;
+    }
+    tr:nth-child(even) td {
+      background-color: #e8f5e9;
+    }
+    .header-col, .header-row {
+      background-color: #a5d6a7;
+      font-weight: bold;
+      color: #1b5e20;
+    }
+    .funciones-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .input-container {
+      background: #ffffff;
+      border: 2px solid #66bb6a;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      flex: 1;
+    }
+    label {
+      font-weight: bold;
+    }
+    select, input {
+      padding: 6px;
+      margin: 8px 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #43a047;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2e7d32;
+    }
+    .resultado {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tabla de Multiplicar del 1 al 30</h1>
+
+  <div class="funciones-container">
+    <!-- Función de tabla -->
+    <div class="input-container">
+      <label for="tabla">Selecciona una tabla (1 al 30):</label>
+      <select id="tabla">
+        <option value="">-- Selecciona --</option>
+      </select>
+
+      <label for="resultado">Escribe un resultado:</label>
+      <input type="number" id="resultado" placeholder="Ejemplo: 24">
+
+      <button onclick="verificarResultado()">Verificar</button>
+      <div class="resultado" id="mensaje"></div>
+    </div>
+
+    <!-- Función de multiplicar fracción -->
+    <div class="input-container">
+      <label for="fraccion">Ingresa una fracción (ej: 1/2):</label>
+      <input type="text" id="fraccion" placeholder="Ej: 20/10">
+
+      <label for="multiplicador">Multiplicar por:</label>
+      <input type="number" id="multiplicador" placeholder="Ej: 2">
+
+      <button onclick="multiplicarFraccion()">Multiplicar Fracción</button>
+      <div class="resultado" id="resultadoFraccion"></div>
+    </div>
+
+    <!-- Función de sumar/restar fracciones -->
+    <div class="input-container">
+      <label for="fraccion1">Fracción 1:</label>
+      <input type="text" id="fraccion1" placeholder="Ej: 10/5">
+
+      <label for="fraccion2">Fracción 2:</label>
+      <input type="text" id="fraccion2" placeholder="Ej: 5/5">
+
+      <label for="operacion">Operación:</label>
+      <select id="operacion">
+        <option value="suma">Sumar</option>
+        <option value="resta">Restar</option>
+      </select>
+
+      <button onclick="operarFracciones()">Calcular</button>
+      <div class="resultado" id="resultadoSuma"></div>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th class="header-row">×</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const tabla = document.querySelector("table");
+    const theadRow = tabla.querySelector("thead tr");
+    const tbody = tabla.querySelector("tbody");
+    const selectTabla = document.getElementById("tabla");
+    const mensaje = document.getElementById("mensaje");
+    const resultadoFraccion = document.getElementById("resultadoFraccion");
+    const resultadoSuma = document.getElementById("resultadoSuma");
+
+    for (let i = 1; i <= 30; i++) {
+      const th = document.createElement("th");
+      th.classList.add("header-row");
+      th.textContent = i;
+      theadRow.appendChild(th);
+
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      selectTabla.appendChild(option);
+    }
+
+    for (let fila = 1; fila <= 30; fila++) {
+      const tr = document.createElement("tr");
+      const th = document.createElement("th");
+      th.textContent = fila;
+      th.classList.add("header-col");
+      tr.appendChild(th);
+      for (let col = 1; col <= 30; col++) {
+        const td = document.createElement("td");
+        td.textContent = fila * col;
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+
+    function verificarResultado() {
+      const tablaSeleccionada = parseInt(document.getElementById("tabla").value);
+      const resultado = parseInt(document.getElementById("resultado").value);
+      mensaje.textContent = "";
+
+      if (isNaN(tablaSeleccionada) || isNaN(resultado)) {
+        mensaje.textContent = "Por favor selecciona una tabla y escribe un número válido.";
+        return;
+      }
+
+      let encontrado = false;
+      for (let i = 1; i <= 30; i++) {
+        if (tablaSeleccionada * i === resultado) {
+          mensaje.textContent = `Sí, ${tablaSeleccionada} × ${i} = ${resultado}`;
+          encontrado = true;
+          break;
+        }
+      }
+
+      if (!encontrado) {
+        mensaje.textContent = `No, ${resultado} no está en la tabla del ${tablaSeleccionada}.`;
+      }
+    }
+
+    function multiplicarFraccion() {
+      const fraccion = document.getElementById("fraccion").value.trim();
+      const multiplicador = parseFloat(document.getElementById("multiplicador").value);
+
+      resultadoFraccion.textContent = "";
+
+      if (!fraccion.includes("/") || isNaN(multiplicador)) {
+        resultadoFraccion.textContent = "Ingresa una fracción válida y un número.";
+        return;
+      }
+
+      const partes = fraccion.split("/");
+      const numerador = parseFloat(partes[0]);
+      const denominador = parseFloat(partes[1]);
+
+      if (isNaN(numerador) || isNaN(denominador) || denominador === 0) {
+        resultadoFraccion.textContent = "Fracción inválida.";
+        return;
+      }
+
+      const nuevoNumerador = numerador * multiplicador;
+      const nuevoDenominador = denominador * multiplicador;
+
+      resultadoFraccion.textContent = `${numerador}/${denominador} × ${multiplicador} = ${nuevoNumerador}/${nuevoDenominador}`;
+    }
+
+    function operarFracciones() {
+      const fraccion1 = document.getElementById("fraccion1").value.trim();
+      const fraccion2 = document.getElementById("fraccion2").value.trim();
+      const operacion = document.getElementById("operacion").value;
+
+      resultadoSuma.textContent = "";
+
+      if (!fraccion1.includes("/") || !fraccion2.includes("/")) {
+        resultadoSuma.textContent = "Ingresa dos fracciones válidas.";
+        return;
+      }
+
+      const [num1, den1] = fraccion1.split("/").map(Number);
+      const [num2, den2] = fraccion2.split("/").map(Number);
+
+      if (isNaN(num1) || isNaN(den1) || isNaN(num2) || isNaN(den2) || den1 === 0 || den2 === 0) {
+        resultadoSuma.textContent = "Fracciones inválidas.";
+        return;
+      }
+
+      const mcm = (a, b) => a * b / mcd(a, b);
+      const mcd = (a, b) => b === 0 ? a : mcd(b, a % b);
+
+      const denominadorComun = mcm(den1, den2);
+      const nuevoNum1 = num1 * (denominadorComun / den1);
+      const nuevoNum2 = num2 * (denominadorComun / den2);
+
+      let resultado = 0;
+      if (operacion === "suma") {
+        resultado = nuevoNum1 + nuevoNum2;
+      } else {
+        resultado = nuevoNum1 - nuevoNum2;
+      }
+
+      const divisor = mcd(resultado, denominadorComun);
+      const simplificadoNum = resultado / divisor;
+      const simplificadoDen = denominadorComun / divisor;
+
+      resultadoSuma.textContent = `${fraccion1} ${operacion === "suma" ? '+' : '-'} ${fraccion2} = ${resultado}/${denominadorComun} = ${simplificadoNum}/${simplificadoDen}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Banco LDP</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      background-color: #eef2f5;
+      color: #333;
+      transition: filter 0.3s ease;
+    }
+    h1, h2 {
+      font-weight: 600;
+      color: #0a2342;
+      margin-bottom: 10px;
+    }
+    p { line-height: 1.4; }
+    #pie-superior, #info-superior {
+      background: #fff;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 10;
+    }
+    .derecha { margin-left: auto; }
+    button, .boton-transparente {
+      background: #0056b3;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      margin: 5px 0;
+    }
+    button:hover, .boton-transparente:hover {
+      background: #004494;
+      transform: scale(1.03);
+    }
+    input, select {
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      transition: border-color 0.3s ease;
+    }
+    input:focus, select:focus {
+      border-color: #0056b3;
+      outline: none;
+    }
+    .container {
+      display: none;
+      padding: 25px;
+      animation: fadeIn 0.4s ease;
+    }
+    .recuadro-tienda {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 520px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .recuadro-tienda:hover { transform: translateY(-2px); }
+    .menu {
+      display: none;
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+      max-width: 520px;
+      width: 90%;
+      animation: fadeInUp 0.3s ease;
+    }
+    #blur.blur-activo {
+      filter: blur(5px);
+      pointer-events: none;
+      user-select: none;
+    }
+    .tablero {
+      display: grid;
+      grid-template: repeat(3, 80px) / repeat(3, 80px);
+      gap: 5px;
+      margin: 20px auto;
+      /* Eliminar centrado anterior, ahora lo hace el recuadro-tienda */
+    }
+    #tateti .recuadro-tienda {
+      margin: 0 auto;
+      max-width: 300px;
+      min-width: 260px;
+      justify-content: center;
+      align-items: center;
+    }
+    .casilla {
+      background: #f1f5f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      cursor: pointer;
+      border-radius: 6px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+    }
+    .casilla:hover { background: #e2e8f0; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity:1; } }
+    @keyframes fadeInUp {
+      from { opacity:0; transform: translate(-50%,-40%); }
+      to { opacity:1; transform: translate(-50%,-50%); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="blur">
+  <div id="pie-superior">
+    <h1>Banco LDP (LoDePedro)</h1>
+    <button class="button" onclick="window.location.href='./index.html'" style="margin-bottom:15px;">Ir a Inicio</button>
+    <button class="boton-transparente derecha" onclick="mostrarMenu('cerrar-cuenta')">Cerrar Cuenta</button>
+  </div>
+
+  <div id="info-superior">
+    <p id="nombre-usuario">Usuario: </p>
+    <p id="numero-cuenta">Cuenta: </p>
+    <p id="dinero-usuario">Dinero: </p>
+    <button onclick="mostrarMenu('cargar-dinero')">Cargar Dinero</button>
+    <p id="inversiones-usuario">Inversiones: </p>
+  </div>
+
+  <div id="login" class="container">
+    <h2>Registrarme</h2>
+    <input type="text" id="input-nombre" placeholder="Tu nombre (ficticio)">
+    <button onclick="enviarLogin()">Enviar</button>
+    <h2>O cargá un avance</h2>
+    <input type="file" id="file-avance" accept=".js">
+    <button onclick="cargarAvances()">Cargar avance</button>
+  </div>
+
+  <div id="inicio" class="container">
+    <div class="recuadro-tienda">
+      <h2>Invertir</h2>
+      <p>Encuentra planes con diferentes ganancias y plazos.</p>
+      <button onclick="mostrarPestaña('inversiones')">Ir a inversiones</button>
+    </div>
+    <div class="recuadro-tienda">
+      <h2>Apostar</h2>
+      <p>Juegos divertidos donde podés duplicar tu dinero.</p>
+      <button onclick="mostrarPestaña('apostar')">Ir a apostar</button>
+    </div>
+  </div>
+
+  <div id="inversiones" class="container">
+    <h1>Inversiones</h1>
+    <div id="planes-inversion" class="recuadro-tienda"></div>
+    <button onclick="mostrarPestaña('inicio')">Volver al inicio</button>
+    <div id="mis-inversiones"></div>
+  </div>
+
+  <div id="apostar" class="container">
+    <h1>Apostar</h1>
+    <div class="recuadro-tienda">
+      <p>TA‑TE‑TI</p>
+      <button onclick="mostrarMenu('apostar-tateti')">Jugar Tateti</button>
+    </div>
+    <div class="recuadro-tienda">
+      <p>Adivina el número</p>
+      <button onclick="mostrarMenu('apostar-adivina')">Jugar Adivina el número</button>
+    </div>
+    <div class="recuadro-tienda">
+      <p>Dado</p>
+      <button onclick="mostrarMenu('apostar-dado')">Jugar Dado</button>
+    </div>
+    <div class="recuadro-tienda">
+      <p>Moneda</p>
+      <button onclick="mostrarMenu('apostar-moneda')">Jugar Moneda</button>
+    </div>
+    <div class="recuadro-tienda">
+      <p>Carta Mayor</p>
+      <button onclick="mostrarMenu('apostar-carta')">Jugar Carta Mayor</button>
+    </div>
+    <button onclick="mostrarPestaña('inicio')">Volver al inicio</button>
+  </div>
+
+  <div id="tateti" class="container">
+    <h1>TATETI</h1>
+    <div class="recuadro-tienda" style="display: flex; flex-direction: column; align-items: center;">
+      <div class="tablero" id="tablero"></div>
+      <button onclick="mostrarMenu('apostar-tateti')" id="btn-reapostar-tateti" style="margin-top:10px;">Volver a apostar</button>
+    </div>
+    <p class="centrado">Eres X, computadora es O</p>
+  </div>
+
+  <!-- NUEVO: Pestaña para el juego "Adivina el número" -->
+  <div id="adivina" class="container">
+    <h1>Adivina el número</h1>
+    <div class="recuadro-tienda" style="display: flex; flex-direction: column; align-items: center;">
+      <p>Elige un número del 1 al 5. Si aciertas, ganas 4 veces lo apostado.</p>
+      <div style="margin-bottom:10px;">
+        <label for="input-numero-adivina">Tu número:</label>
+        <select id="input-numero-adivina">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <button onclick="jugarAdivina()" id="btn-jugar-adivina">Jugar</button>
+      <p id="resultado-adivina" style="margin-top:10px;"></p>
+      <button onclick="mostrarMenu('apostar-adivina')" id="btn-reapostar-adivina" style="margin-top:10px;">Volver a apostar</button>
+    </div>
+    <button onclick="mostrarPestaña('apostar')">Volver</button>
+  </div>
+
+  <div id="dado" class="container">
+    <h1>Dado</h1>
+    <div class="recuadro-tienda" style="display:flex; flex-direction:column; align-items:center;">
+      <p>Elige un número del 1 al 6. Si sale tu número, ganas 5 veces lo apostado.</p>
+      <div style="margin-bottom:10px;">
+        <label for="input-numero-dado">Tu número:</label>
+        <select id="input-numero-dado">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <button onclick="jugarDado()" id="btn-jugar-dado">Jugar</button>
+      <p id="resultado-dado" style="margin-top:10px;"></p>
+      <button onclick="mostrarMenu('apostar-dado')" id="btn-reapostar-dado" style="margin-top:10px;">Volver a apostar</button>
+    </div>
+    <button onclick="mostrarPestaña('apostar')">Volver</button>
+  </div>
+  <div id="moneda" class="container">
+    <h1>Moneda</h1>
+    <div class="recuadro-tienda" style="display:flex; flex-direction:column; align-items:center;">
+      <p>Elige cara o cruz. Si aciertas, ganas el doble de lo apostado.</p>
+      <div style="margin-bottom:10px;">
+        <label for="input-moneda">Tu elección:</label>
+        <select id="input-moneda">
+          <option value="cara">Cara</option>
+          <option value="cruz">Cruz</option>
+        </select>
+      </div>
+      <button onclick="jugarMoneda()" id="btn-jugar-moneda">Jugar</button>
+      <p id="resultado-moneda" style="margin-top:10px;"></p>
+      <button onclick="mostrarMenu('apostar-moneda')" id="btn-reapostar-moneda" style="margin-top:10px;">Volver a apostar</button>
+    </div>
+    <button onclick="mostrarPestaña('apostar')">Volver</button>
+  </div>
+  <div id="carta" class="container">
+    <h1>Carta Mayor</h1>
+    <div class="recuadro-tienda" style="display:flex; flex-direction:column; align-items:center;">
+      <p>Si tu carta es mayor que la de la computadora, ganas el doble de lo apostado.</p>
+      <button onclick="jugarCarta()" id="btn-jugar-carta">Jugar</button>
+      <p id="resultado-carta" style="margin-top:10px;"></p>
+      <button onclick="mostrarMenu('apostar-carta')" id="btn-reapostar-carta" style="margin-top:10px;">Volver a apostar</button>
+    </div>
+    <button onclick="mostrarPestaña('apostar')">Volver</button>
+  </div>
+</div>
+
+<div id="cargar-dinero" class="menu">
+  <h2 class="centrado">¿Cuánto querés cargar?</h2>
+  <input type="text" id="input-carga" placeholder="Ej: 2000">
+  <select id="metodo-pago">
+    <option>Seleccione método</option>
+    <option>Mercado Pago</option>
+    <option>Cuenta DNI</option>
+  </select>
+  <button onclick="iniciarCarga()">Cargar dinero</button>
+  <p id="status-carga" class="centrado"></p>
+</div>
+
+<div id="cerrar-cuenta" class="menu">
+  <h2 class="centrado">Cerrar Cuenta</h2>
+  <p class="justificado">
+    Si cierras la cuenta perderás avances. Podés guardar tu progreso o continuar.
+  </p>
+  <button onclick="guardarAvances()">Guardar Avances</button>
+  <button onclick="ocultarMenus()">Continuar Jugando</button>
+  <button onclick="cerrarCuenta()">Cerrar Cuenta</button>
+</div>
+
+<!-- NUEVO: Modal para ingresar apuesta antes de jugar tateti -->
+<div id="apostar-tateti" class="menu">
+  <h2 class="centrado">¿Cuánto querés apostar?</h2>
+  <input type="text" id="input-apuesta-tateti" placeholder="Ej: 100">
+  <button onclick="confirmarApuestaTateti()">Jugar</button>
+  <button onclick="ocultarMenus()">Cancelar</button>
+  <p id="status-apuesta-tateti" class="centrado"></p>
+</div>
+
+<!-- NUEVO: Modal para apostar en "Adivina el número" -->
+<div id="apostar-adivina" class="menu">
+  <h2 class="centrado">¿Cuánto querés apostar?</h2>
+  <input type="text" id="input-apuesta-adivina" placeholder="Ej: 100">
+  <button onclick="confirmarApuestaAdivina()">Jugar</button>
+  <button onclick="ocultarMenus()">Cancelar</button>
+  <p id="status-apuesta-adivina" class="centrado"></p>
+</div>
+
+<!-- NUEVO: Modal para apostar en "Dado" -->
+<div id="apostar-dado" class="menu">
+  <h2 class="centrado">¿Cuánto querés apostar?</h2>
+  <input type="text" id="input-apuesta-dado" placeholder="Ej: 100">
+  <button onclick="confirmarApuestaDado()">Jugar</button>
+  <button onclick="ocultarMenus()">Cancelar</button>
+  <p id="status-apuesta-dado" class="centrado"></p>
+</div>
+
+<!-- NUEVO: Modal para apostar en "Moneda" -->
+<div id="apostar-moneda" class="menu">
+  <h2 class="centrado">¿Cuánto querés apostar?</h2>
+  <input type="text" id="input-apuesta-moneda" placeholder="Ej: 100">
+  <button onclick="confirmarApuestaMoneda()">Jugar</button>
+  <button onclick="ocultarMenus()">Cancelar</button>
+  <p id="status-apuesta-moneda" class="centrado"></p>
+</div>
+
+<!-- NUEVO: Modal para apostar en "Carta Mayor" -->
+<div id="apostar-carta" class="menu">
+  <h2 class="centrado">¿Cuánto querés apostar?</h2>
+  <input type="text" id="input-apuesta-carta" placeholder="Ej: 100">
+  <button onclick="confirmarApuestaCarta()">Jugar</button>
+  <button onclick="ocultarMenus()">Cancelar</button>
+  <p id="status-apuesta-carta" class="centrado"></p>
+</div>
+
+<script>
+let usuario = { nombre:"", dinero:1500, cuenta: generarNumeroCuenta(), inversiones:0 };
+let tablero = Array(9).fill("");
+let apuestaTateti = 0; // NUEVO: para guardar la apuesta actual de tateti
+let apuestaAdivina = 0; // NUEVO: para guardar la apuesta actual de adivina
+let apuestaDado = 0;
+let apuestaMoneda = 0;
+let apuestaCarta = 0;
+
+// NUEVO: Lista de 15 planes
+const planes = [
+    { id: 1, ganancia: 0.03, minutos: 1 },
+    { id: 2, ganancia: 0.04, minutos: 2 },
+    { id: 3, ganancia: 0.045, minutos: 3 },
+    { id: 4, ganancia: 0.05, minutos: 4 },
+    { id: 5, ganancia: 0.055, minutos: 5 },
+    { id: 6, ganancia: 0.06, minutos: 6 },
+    { id: 7, ganancia: 0.065, minutos: 7 },
+    { id: 8, ganancia: 0.07, minutos: 8 },
+    { id: 9, ganancia: 0.075, minutos: 9 },
+    { id: 10, ganancia: 0.08, minutos: 10 },
+    { id: 11, ganancia: 0.09, minutos: 11 },
+    { id: 12, ganancia: 0.10, minutos: 12 },
+    { id: 13, ganancia: 0.11, minutos: 13 },
+    { id: 14, ganancia: 0.12, minutos: 14 },
+    { id: 15, ganancia: 0.13, minutos: 15 }
+];
+
+function generarNumeroCuenta() {
+  const md = () => Array.from({length:4},() => Math.floor(Math.random()*9)+1).join('');
+  return `${md()} - ${md()} - ${md()}`;
+}
+
+function mostrarPestaña(id) {
+  document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  if (id !== 'login') {
+    document.getElementById('info-superior').style.display = 'flex';
+    actualizarInfoSuperior();
+  } else {
+    document.getElementById('info-superior').style.display = 'none';
+  }
+  ocultarMenus();
+  // Cambiar: iniciarTateti solo se llama después de apostar
+  // if (id === 'tateti') iniciarTateti();
+}
+
+function mostrarMenu(id) {
+  document.getElementById('blur').classList.add('blur-activo');
+  document.querySelectorAll('.menu').forEach(c=>c.style.display='none');
+  document.getElementById(id).style.display = 'block';
+}
+
+function ocultarMenus() {
+  document.getElementById('blur').classList.remove('blur-activo');
+  document.querySelectorAll('.menu').forEach(c=>c.style.display='none');
+}
+
+function actualizarInfoSuperior() {
+  document.getElementById('nombre-usuario').textContent = `Usuario: ${usuario.nombre}`;
+  document.getElementById('numero-cuenta').textContent = `Cuenta: ${usuario.cuenta}`;
+  document.getElementById('dinero-usuario').textContent = `Dinero: $${usuario.dinero}`;
+  document.getElementById('inversiones-usuario').textContent = `Inversiones: ${usuario.inversiones}`;
+}
+
+function enviarLogin() {
+  const n = document.getElementById('input-nombre').value.trim();
+  if (!n) return alert('Ingrese nombre');
+  usuario.nombre = n;
+  mostrarPestaña('inicio');
+}
+
+function cargarAvances() {
+  const file = document.getElementById('file-avance').files[0];
+  if (!file) return alert('Seleccioná un archivo');
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      eval(r.result);
+      usuario.nombre = window.name || usuario.nombre;
+      usuario.dinero = window.money || usuario.dinero;
+      alert('Avance cargado correctamente');
+      mostrarPestaña('inicio');
+    } catch(e) {
+      alert('Error al leer archivo');
+    }
+  };
+  r.readAsText(file);
+}
+
+// Resto de funciones: iniciarCarga, activarPlan, guardado, tateti:
+
+function iniciarCarga() {
+  const m = parseInt(document.getElementById('input-carga').value);
+  if (!m || m<=0) return alert('Monto inválido');
+  const sts= document.getElementById('status-carga'), msgs=["Solicitando pago","Pago recibido","Cargando...","Hecho","Volviendo"];
+  let i=0;
+  const iv = setInterval(()=>{
+    sts.textContent = msgs[i] || "";
+    i++;
+    if(i>=msgs.length){
+      clearInterval(iv);
+      usuario.dinero+=m;
+      ocultarMenus();
+      mostrarPestaña('inicio');
+    }
+  },1000);
+}
+
+function activarPlan() {
+  const m = parseInt(document.getElementById('input-inversion').value);
+  if (!m || m>usuario.dinero) return alert('Monto inválido');
+  usuario.dinero -= m; usuario.inversiones++;
+  actualizarInfoSuperior();
+  const d=document.getElementById('mis-inversiones');
+  const plan=document.createElement('div');
+  plan.classList.add('recuadro-tienda');
+  plan.innerHTML = `<p>Plan activado, esperar 1 minuto...</p>`;
+  d.appendChild(plan);
+  setTimeout(()=>{
+    usuario.dinero += m + m*0.05;
+    usuario.inversiones--;
+    d.removeChild(plan);
+    actualizarInfoSuperior();
+  },60000);
+}
+
+// NUEVO: renderizar los planes al mostrar la pestaña de inversiones
+function renderizarPlanes() {
+  const cont = document.getElementById('planes-inversion');
+  cont.innerHTML = '';
+  planes.forEach(plan => {
+    const div = document.createElement('div');
+    div.className = 'recuadro-tienda';
+    div.innerHTML = `
+      <p>Plan ${plan.id.toString().padStart(3, '0')} – Ganancia ${(plan.ganancia*100).toFixed(1)}%, plazo ${plan.minutos} min</p>
+      <input type="text" id="input-inversion-${plan.id}" placeholder="Ej: $100">
+      <button onclick="activarPlan(${plan.id})">Activar Plan</button>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+// Modificar mostrarPestaña para renderizar los planes solo cuando se entra a inversiones
+const mostrarPestañaOriginal = mostrarPestaña;
+mostrarPestaña = function(id) {
+  // ...existing code...
+  if (id === 'inversiones') renderizarPlanes();
+  // ...existing code...
+  mostrarPestañaOriginal.call(this, id);
+}
+
+// NUEVO: activarPlan para cualquier plan
+function activarPlan(planId) {
+  const plan = planes.find(p => p.id === planId);
+  const input = document.getElementById(`input-inversion-${planId}`);
+  const m = parseInt(input.value);
+  if (!m || m > usuario.dinero) return alert('Monto inválido');
+  usuario.dinero -= m; usuario.inversiones++;
+  actualizarInfoSuperior();
+  const d = document.getElementById('mis-inversiones');
+  const planDiv = document.createElement('div');
+  planDiv.classList.add('recuadro-tienda');
+  planDiv.innerHTML = `<p>Plan ${plan.id.toString().padStart(3, '0')} activado, esperar ${plan.minutos} minuto(s)...</p>`;
+  d.appendChild(planDiv);
+  setTimeout(() => {
+    usuario.dinero += m + Math.round(m * plan.ganancia);
+    usuario.inversiones--;
+    d.removeChild(planDiv);
+    actualizarInfoSuperior();
+    alert(`¡Tu inversión en el Plan ${plan.id.toString().padStart(3, '0')} finalizó! Ganaste $${Math.round(m * plan.ganancia)}`);
+  }, plan.minutos * 60000);
+}
+
+function guardarAvances() {
+  const cnt = `window.name="${usuario.nombre}";window.money=${usuario.dinero};`;
+  const b=new Blob([cnt],{type:'text/javascript'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='data-user.js';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  ocultarMenus();
+}
+
+function cerrarCuenta(){ location.reload(); }
+
+function confirmarApuestaTateti() {
+  const input = document.getElementById('input-apuesta-tateti');
+  const status = document.getElementById('status-apuesta-tateti');
+  let monto = parseInt(input.value);
+  if (!monto || monto <= 0) {
+    status.textContent = "Monto inválido";
+    return;
+  }
+  if (monto > usuario.dinero) {
+    status.textContent = "No tienes suficiente dinero";
+    return;
+  }
+  apuestaTateti = monto;
+  status.textContent = "";
+  ocultarMenus();
+  mostrarPestaña('tateti');
+  iniciarTateti();
+}
+
+function confirmarApuestaAdivina() {
+  const input = document.getElementById('input-apuesta-adivina');
+  const status = document.getElementById('status-apuesta-adivina');
+  let monto = parseInt(input.value);
+  if (!monto || monto <= 0) {
+    status.textContent = "Monto inválido";
+    return;
+  }
+  if (monto > usuario.dinero) {
+    status.textContent = "No tienes suficiente dinero";
+    return;
+  }
+  apuestaAdivina = monto;
+  status.textContent = "";
+  ocultarMenus();
+  mostrarPestaña('adivina');
+  document.getElementById('resultado-adivina').textContent = "";
+  document.getElementById('btn-jugar-adivina').disabled = false;
+}
+
+function confirmarApuestaDado() {
+  const input = document.getElementById('input-apuesta-dado');
+  const status = document.getElementById('status-apuesta-dado');
+  let monto = parseInt(input.value);
+  if (!monto || monto <= 0) {
+    status.textContent = "Monto inválido";
+    return;
+  }
+  if (monto > usuario.dinero) {
+    status.textContent = "No tienes suficiente dinero";
+    return;
+  }
+  apuestaDado = monto;
+  status.textContent = "";
+  ocultarMenus();
+  mostrarPestaña('dado');
+  document.getElementById('resultado-dado').textContent = "";
+  document.getElementById('btn-jugar-dado').disabled = false;
+}
+
+function confirmarApuestaMoneda() {
+  const input = document.getElementById('input-apuesta-moneda');
+  const status = document.getElementById('status-apuesta-moneda');
+  let monto = parseInt(input.value);
+  if (!monto || monto <= 0) {
+    status.textContent = "Monto inválido";
+    return;
+  }
+  if (monto > usuario.dinero) {
+    status.textContent = "No tienes suficiente dinero";
+    return;
+  }
+  apuestaMoneda = monto;
+  status.textContent = "";
+  ocultarMenus();
+  mostrarPestaña('moneda');
+  document.getElementById('resultado-moneda').textContent = "";
+  document.getElementById('btn-jugar-moneda').disabled = false;
+}
+
+function confirmarApuestaCarta() {
+  const input = document.getElementById('input-apuesta-carta');
+  const status = document.getElementById('status-apuesta-carta');
+  let monto = parseInt(input.value);
+  if (!monto || monto <= 0) {
+    status.textContent = "Monto inválido";
+    return;
+  }
+  if (monto > usuario.dinero) {
+    status.textContent = "No tienes suficiente dinero";
+    return;
+  }
+  apuestaCarta = monto;
+  status.textContent = "";
+  ocultarMenus();
+  mostrarPestaña('carta');
+  document.getElementById('resultado-carta').textContent = "";
+  document.getElementById('btn-jugar-carta').disabled = false;
+}
+
+// NUEVO: lógica del juego "Adivina el número"
+function jugarAdivina() {
+  if (!apuestaAdivina) return;
+  const numeroElegido = parseInt(document.getElementById('input-numero-adivina').value);
+  const numeroGanador = Math.floor(Math.random() * 5) + 1;
+  let msg = '';
+  if (numeroElegido === numeroGanador) {
+    usuario.dinero += apuestaAdivina * 4;
+    msg = `¡Ganaste! El número era ${numeroGanador}. Has ganado $${apuestaAdivina * 4}`;
+  } else {
+    usuario.dinero -= apuestaAdivina;
+    msg = `Perdiste. El número era ${numeroGanador}. Has perdido $${apuestaAdivina}`;
+  }
+  apuestaAdivina = 0;
+  actualizarInfoSuperior();
+  document.getElementById('resultado-adivina').textContent = msg;
+  document.getElementById('btn-jugar-adivina').disabled = true;
+}
+
+function jugarDado() {
+  if (!apuestaDado) return;
+  const numeroElegido = parseInt(document.getElementById('input-numero-dado').value);
+  const numeroGanador = Math.floor(Math.random() * 6) + 1;
+  let msg = '';
+  if (numeroElegido === numeroGanador) {
+    usuario.dinero += apuestaDado * 5;
+    msg = `¡Ganaste! Salió el ${numeroGanador}. Has ganado $${apuestaDado * 5}`;
+  } else {
+    usuario.dinero -= apuestaDado;
+    msg = `Perdiste. Salió el ${numeroGanador}. Has perdido $${apuestaDado}`;
+  }
+  apuestaDado = 0;
+  actualizarInfoSuperior();
+  document.getElementById('resultado-dado').textContent = msg;
+  document.getElementById('btn-jugar-dado').disabled = true;
+}
+
+function jugarMoneda() {
+  if (!apuestaMoneda) return;
+  const eleccion = document.getElementById('input-moneda').value;
+  const resultado = Math.random() < 0.5 ? 'cara' : 'cruz';
+  let msg = '';
+  if (eleccion === resultado) {
+    usuario.dinero += apuestaMoneda;
+    msg = `¡Ganaste! Salió ${resultado}. Has ganado $${apuestaMoneda * 2}`;
+  } else {
+    usuario.dinero -= apuestaMoneda;
+    msg = `Perdiste. Salió ${resultado}. Has perdido $${apuestaMoneda}`;
+  }
+  apuestaMoneda = 0;
+  actualizarInfoSuperior();
+  document.getElementById('resultado-moneda').textContent = msg;
+  document.getElementById('btn-jugar-moneda').disabled = true;
+}
+
+function jugarCarta() {
+  if (!apuestaCarta) return;
+  const cartaUsuario = Math.floor(Math.random() * 13) + 1; // 1-13
+  const cartaPC = Math.floor(Math.random() * 13) + 1;
+  let msg = `Tu carta: ${cartaUsuario} | Computadora: ${cartaPC}. `;
+  if (cartaUsuario > cartaPC) {
+    usuario.dinero += apuestaCarta;
+    msg += `¡Ganaste! Has ganado $${apuestaCarta * 2}`;
+  } else if (cartaUsuario < cartaPC) {
+    usuario.dinero -= apuestaCarta;
+    msg += `Perdiste. Has perdido $${apuestaCarta}`;
+  } else {
+    msg += 'Empate. No ganas ni pierdes dinero.';
+  }
+  apuestaCarta = 0;
+  actualizarInfoSuperior();
+  document.getElementById('resultado-carta').textContent = msg;
+  document.getElementById('btn-jugar-carta').disabled = true;
+}
+
+function iniciarTateti() {
+  tablero.fill("");
+  const t = document.getElementById('tablero');
+  t.innerHTML = '';
+  tablero.forEach((_,i)=>{
+    const c = document.createElement('div');
+    c.classList.add('casilla');
+    c.addEventListener('click',()=> jugada(i,c));
+    t.appendChild(c);
+  });
+}
+
+function jugada(idx, el) {
+  if (tablero[idx]) return;
+  tablero[idx] = 'X'; el.textContent = 'X';
+  if (verGanador('X')) return finTateti('ganaste');
+  jugadaPC();
+}
+
+function jugadaPC() {
+  const vac = tablero.map((v,i)=>!v?i:null).filter(v=>v!==null);
+  if (!vac.length) return finTateti('empate');
+  const i = vac[Math.floor(Math.random() * vac.length)];
+  const cel = document.querySelectorAll('.casilla')[i];
+  tablero[i] = 'O'; cel.textContent = 'O';
+  if (verGanador('O')) return finTateti('perdiste');
+}
+
+function verGanador(j) {
+  const combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  return combos.some(c => c.every(x=>tablero[x]===j));
+}
+
+// NUEVO: función para finalizar tateti y actualizar dinero según resultado
+function finTateti(resultado) {
+  let msg = '';
+  if (resultado === 'ganaste') {
+    usuario.dinero += apuestaTateti; // gana el doble (apuesta x2, ya que ya apostó el monto)
+    msg = `¡Ganaste! Has ganado $${apuestaTateti * 2}`;
+  } else if (resultado === 'perdiste') {
+    usuario.dinero -= apuestaTateti;
+    msg = `Perdiste. Has perdido $${apuestaTateti}`;
+  } else {
+    msg = 'Empate. No ganas ni pierdes dinero.';
+  }
+  apuestaTateti = 0;
+  actualizarInfoSuperior();
+  setTimeout(() => {
+    alert(msg);
+    mostrarPestaña('inicio');
+  }, 100);
+}
+
+mostrarPestaña('login');
+</script>
+</body>
+</html>

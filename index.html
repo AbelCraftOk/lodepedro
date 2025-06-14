@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoDePedro - Android</title>
+    <link rel="Icon" type="png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+    html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    body {
+        background: linear-gradient(135deg, #2ec6e6 0%, #6e4aff 50%, #a13fff 100%);
+        font-family: 'Montserrat', Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        font-size: 16px;
+    }
+    .text-mini {
+        font-size: 12px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 1px 1px 6px #2ec6e6, 0 0 8px #6e4aff;
+    }
+    .container {
+        flex: 1;
+        max-width: 600px;
+        margin: 20px auto 20px auto;
+        padding: 20px;
+    }
+    .task-box {
+        border: 2px solid #fff;
+        box-shadow: 0 4px 16px rgba(44, 200, 255, 0.18), 0 1.5px 6px rgba(161, 63, 255, 0.12);
+        padding: 22px 24px;
+        margin-top: 28px;
+        border-radius: 18px;
+        background: rgba(30, 30, 60, 0.82);
+        text-align: left;
+        transition: box-shadow 0.2s, background 0.2s;
+    }
+    .task-box:hover {
+        box-shadow: 0 8px 32px rgba(44, 200, 255, 0.22), 0 3px 12px rgba(161, 63, 255, 0.18);
+        background: rgba(60, 30, 80, 0.92);
+    }
+    .task-box h2, .task-box h1, h1, h2, h3, h4 {
+        color: #fff;
+        text-shadow: 2px 2px 0 #ff3ecb, 0 2px 12px #2ec6e6;
+        font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+        letter-spacing: 1px;
+        font-size: 1.17em;
+    }
+    h1 {
+        font-size: 1.7em;
+    }
+    .recuadro {
+        border: 2px solid #ff3ecb;
+        background: rgba(46, 198, 230, 0.85);
+        color: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        font-family: 'Montserrat', Arial, sans-serif;
+        width: 300px;
+        box-shadow: 0 2px 8px #6e4aff44;
+        font-size: 1em;
+        margin: 0 auto 12px auto;
+    }
+    .recuadro:focus {
+        outline: none;
+        border-color: #fff;
+    }
+    .separator {
+        border: none;
+        height: 3px;
+        background: linear-gradient(90deg, #2ec6e6 0%, #ff3ecb 100%);
+        margin: 18px 0;
+        border-radius: 2px;
+        opacity: 0.98;
+    }
+    .button {
+        padding: 10px 18px;
+        margin: 5px 4px;
+        border: none;
+        cursor: pointer;
+        border-radius: 8px;
+        font-family: 'Montserrat', Arial, sans-serif;
+        font-weight: bold;
+        font-size: 1em;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 8px #6e4aff33;
+        outline: none;
+    }
+    .button-primary {
+        background: linear-gradient(90deg, #ff3ecb 60%, #a13fff 100%);
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    .button-primary:hover {
+        background: linear-gradient(90deg, #a13fff 0%, #ff3ecb 100%);
+        color: #fff;
+        border: 2px solid #ff3ecb;
+    }
+    .button-secondary {
+        background: linear-gradient(90deg, #2ec6e6 60%, #6e4aff 100%);
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    .button-secondary:hover {
+        background: linear-gradient(90deg, #6e4aff 0%, #2ec6e6 100%);
+        color: #fff;
+        border: 2px solid #2ec6e6;
+    }
+    .button-triniti {
+        background: linear-gradient(90deg, #ff3ecb 60%, #2ec6e6 100%);
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    .button-triniti:hover {
+        background: linear-gradient(90deg, #2ec6e6 0%, #ff3ecb 100%);
+        color: #fff;
+        border: 2px solid #ff3ecb;
+    }
+    .input-fecha {
+        padding: 10px;
+        width: 80%;
+        margin-bottom: 10px;
+        border: 2px solid #ff3ecb;
+        border-radius: 8px;
+        text-align: center;
+        font-family: 'Montserrat', Arial, sans-serif;
+        font-size: 1em;
+        background: #fff;
+        color: #a13fff;
+        box-shadow: 0 2px 8px #2ec6e644;
+    }
+    .footer, .header {
+        background: rgba(30, 30, 60, 0.92);
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        color: #fff;
+        font-family: 'Montserrat', Arial, sans-serif;
+        font-weight: bold;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 8px #6e4aff33;
+        font-size: 1em;
+    }
+    .footer a {
+        color: #ff3ecb;
+        text-decoration: underline;
+    }
+    .supe {
+        background: linear-gradient(90deg, #2ec6e6 0%, #a13fff 100%);
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+        color: #fff;
+    }
+    .header img {
+        width: 100%;
+        height: auto;
+    }
+    .tarea-titulo, .tarea-subtitulo {
+        color: #ff3ecb;
+        text-shadow: 1px 1px 0 #2ec6e6, 0 1px 4px #6e4aff;
+        font-weight: bold;
+        font-size: 1em;
+    }
+    img[alt="Logo"] {
+        border-radius: 24px;
+        box-shadow: 0 4px 24px #2ec6e6aa;
+        margin-bottom: 12px;
+        width: 190px;
+        height: 190px;
+    }
+    p, li, label, input, button {
+        color: #fff;
+        text-shadow: 0 1px 6px #2ec6e677;
+    }
+    p, li {
+        font-size: 1em;
+        line-height: 1.5;
+    }
+    </style>
+</head>
+<body>
+    <div id="inicio" class="container">
+        <img src="logo.png" width="190" height="190" alt="Logo">
+        <h1>LoDePedro - Android</h1>
+        <div class="task-box">
+            <h2>Protector de Pantalla OJEDA:</h2>
+            <p>Podes visitar el protector de pantalla con las imagenes de la famillia OJEDA</p>
+            <button class="button button-primary" onclick="window.location.href='./protector-de-pantalla/protector-de-pantalla.html'">Ir al Protector de Pantalla</button>
+        </div>
+        <div class="task-box">
+            <h2>Banco LoDePedro</h2>
+            <p>Es una billetera virtual de dinero falso donde trae, juegos, inversiones, etc.</p>
+            <button class="button button-secondary" onclick="window.location.href='./banco-lodepedro.html'">Entrar al Banco</button>
+        </div>
+        <div class="task-box">
+            <h2>Creador de Codigos QR</h2>
+            <p>Aqui podras crear tus codigos qr, 100% facil y seguro. Pronto sacaremos nuevas actualizaciones que permitiran hacer muchas cosas mas.</p>
+            <button class="button button-primary" onclick="window.location.href='./codigos-qr.html'">Visitar el Creador de Codigos QR</button>
+        </div>
+        <div class="task-box">
+            <h2>Duelo de Lineas</h2>
+            <p>Un juego donde debes encontrar un cuadrado especial escondido entre muchos cuadrados normales, podras elejir la dificultad y el tamaño del ecenario.</p>
+            <button class="button button-primary" onclick="window.location.href='./duelo-de-lineas.html'">Jugar Duelo de Lineas</button>
+        </div>
+        <div class="task-box">
+            <h2>Mercado en Progreso</h2>
+            <p>El objetivo es comprar y revender objetos de forma online. Recuerda que tanto los objetos como el dinero son falsos.</p>
+            <button class="button button-secondary" onclick="window.location.href='./mercado-en-progreso.html'">Jugar al Mercado en Progreso</button>
+        </div>
+        <div class="task-box">
+            <h2>Ruleta Rusa</h2>
+            <p>un juego de rulea rusa, con personas infinitas, sonidos y animaciones. Juegalo YA! con tus amigos</p>
+            <button class="button button-primary" onclick="window.location.href='./ruleta-rusa.html'">Jugar a la Ruleta Rusa</button>
+        </div>
+        <div class="task-box">
+            <h2>Superior o Inferior</h2>
+            <p>Puedes apostar, cargar y perder dinero falso en apuestas de si el numero que saldra es mayor o menor al actual.</p>
+            <button class="button button-secondary" onclick="window.location.href='./superior-o-inferior.html'">Jugar a Superior o Inferior</button>
+        </div>
+        <div class="task-box">
+            <h2>TA-TE-TI</h2>
+            <p>Juega con tu amigo un 1vs1 al TA-TE-TI clasico que todos conocemos.</p>
+            <button class="button button-primary" onclick="window.location.href='./ta-te-ti.html'">Jugar al TA-TE-TI</button>
+        </div>
+        <div class="task-box">
+            <h2>Tabla de Multiplicar</h2>
+            <p>Utiliza esta tabla si o si. Mira todas las cosas que tiene para ofrecerte que son unicas:</p>
+            <ul>
+                <li>Tamblas de Multiplicar desde el 1 al 30 de ambos lados.</li>
+                <div class="separator"></div>
+                <li>Podes buscar los resultados de la siguiente manera: Seleccionas la tabla de la que quieres verificar el numero y luego debajo escribes cual numero es.</li>
+                <div class="separator"></div>
+                <li>Podes multiplicar fracciones: Escribes la fraccion, ej: 20/10 y pones por cuanto lo queres multiplicar, ej: x2.</li>
+                <div class="separator"></div>
+                <li>Podes Sumar o Restar fracciones: Escribes la fraccion inicial, debajo pones la 2da fraccion y luego seleccionas si es para sumar o restar.</li>
+            </ul>
+            <button class="button button-secondary" onclick="window.location.href='./tabla-matematica.html'">Ir a la Tabla de Multiplicar</button>
+        </div>
+        <div class="task-box">
+            <h2>Terminal de HTML</h2>
+            <p>Escribes el codigo o abres el Archivo y se leera y te permitira modificarlo y descargarlo.</p>
+            <button class="button button-primary" onclick="window.location.href='./terminal-html.html'">Ir a la Terminal de HTML</button>
+        </div>
+    </div>
+
+    <!-- Pie de página inferior -->
+    <div id="ipie" class="footer">
+        <h3>Creador: Pedro Gabriel Ojeda</h3>
+        <button class="button button-primary" onclick="window.open('https://wa.me/+542215989210')">Numero de WhatsApp</button>
+        <button class="button button-secondary" onclick="window.open('mailto:pedrograbielojeda@gmail.com')">Correo Principal</button>
+        <button class="button button-primary" onclick="window.open('mailto:pedronacio166@gmail.com')">Correo de Estudios</button>
+    </div>
+
+    <script>
+        function mostrarPestaña(id) {
+            // Oculta todas las pestañas
+                document.querySelectorAll('.container').forEach(div => {
+                div.style.display = 'none';
+            });
+    
+            // Muestra la pestaña seleccionada
+            document.getElementById(id).style.display = 'block';
+        }
+    </script>
+</body>
+</html>
