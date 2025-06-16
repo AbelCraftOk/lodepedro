@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear nueva partida Pixel Art</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0e7ef 0%, #b3c6e0 100%);
+            text-align: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #1976d2;
+            margin-top: 24px;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #0001;
+        }
+        label { font-weight: 500; }
+        input, select {
+            margin: 2px 0 10px 0;
+            padding: 4px 8px;
+            font-size: 1em;
+            border-radius: 4px;
+            border: 1px solid #b0b0b0;
+        }
+        .color-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+            justify-content: center;
+        }
+        .color-row input { width: 120px; }
+        #matriz-editor {
+            margin: 24px 0 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+        table {
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px #0002;
+            padding: 18px 18px 14px 18px;
+            margin: 0;
+        }
+        td { padding: 0; }
+        #codigo-output {
+            width: 100%;
+            height: 220px;
+            margin-top: 18px;
+            font-family: monospace;
+            border-radius: 8px;
+            border: 1px solid #b0b0b0;
+            box-shadow: 0 2px 8px #0001;
+            background: #f5f8fa;
+            padding: 10px;
+        }
+        #copy-btn {
+            margin-top: 8px;
+            padding: 10px 22px;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0001;
+            transition: background 0.2s;
+        }
+        #copy-btn:hover { background: #1256a3; }
+        #download-btn {
+            margin-top: 8px;
+            padding: 10px 22px;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0001;
+            transition: background 0.2s;
+        }
+        #download-btn:hover { background: #1256a3; }
+        #launcher {
+            margin-top: 8px;
+            padding: 10px 22px;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0001;
+            transition: background 0.2s;
+        }
+        #launcher:hover { background: #1256a3; }
+        button[type="submit"] {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 22px;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 8px 8px 0 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0001;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #1256a3;
+        }
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 18px;
+            margin-top: 10px;
+        }
+        .color-sample {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 2px solid #b0b0b0;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #222;
+            transition: border 0.15s;
+            outline: none;
+        }
+        .color-sample.selected {
+            border: 3px solid #1976d2;
+        }
+        .color-sample span {
+            background: rgba(255,255,255,0.7);
+            border-radius: 3px;
+            padding: 0 2px;
+            font-size: 11px;
+            margin-left: 2px;
+        }
+        .matriz-cell {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: border 0.15s;
+        }
+        .matriz-cell.selected {
+            border: 2px solid #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <button id="launcher" onclick="window.location.href='./index.html'" style="margin-bottom:15px;">Volver al Launcher</button>
+    <h1>Crear nueva partida Pixel Art</h1>
+    <form id="partida-form" autocomplete="off">
+        <div>
+            <label>ID de partida: <input name="id_partida" required pattern="p-[a-zA-Z0-9_-]+"></label>
+        </div>
+        <div>
+            <label>Nombre de la partida: <input name="nombre_partida" required></label>
+        </div>
+        <div>
+            <label>Filas: <input name="filas" type="number" min="1" max="20" value="6" required style="width:60px"></label>
+            <label>Columnas: <input name="columnas" type="number" min="1" max="20" value="10" required style="width:60px"></label>
+        </div>
+        <div>
+            <b>Colores (máx 5):</b>
+            <div class="color-row">
+                <input name="color1_nombre" placeholder="Nombre color 1" required>
+                <input name="color1_clase" placeholder="Clase CSS color 1" required>
+            </div>
+            <div class="color-row">
+                <input name="color2_nombre" placeholder="Nombre color 2">
+                <input name="color2_clase" placeholder="Clase CSS color 2">
+            </div>
+            <div class="color-row">
+                <input name="color3_nombre" placeholder="Nombre color 3">
+                <input name="color3_clase" placeholder="Clase CSS color 3">
+            </div>
+            <div class="color-row">
+                <input name="color4_nombre" placeholder="Nombre color 4">
+                <input name="color4_clase" placeholder="Clase CSS color 4">
+            </div>
+            <div class="color-row">
+                <input name="color5_nombre" placeholder="Nombre color 5">
+                <input name="color5_clase" placeholder="Clase CSS color 5">
+            </div>
+        </div>
+        <div>
+            <b>Colores disponibles:</b>
+            <div id="color-palette" class="color-palette"></div>
+        </div>
+        <div>
+            <b>Editor de matriz:</b>
+            <div id="matriz-editor"></div>
+        </div>
+        <button type="submit">Generar código</button>
+    </form>
+    <textarea id="codigo-output" readonly placeholder="Aquí aparecerá el código para copiar"></textarea>
+    <br>
+    <button id="copy-btn">Copiar código</button>
+    <button id="download-btn" type="button">Descargar .JS</button>
+    <script>
+        // Herramienta para crear nuevas partidas de Pixel Art
+
+// Paleta de colores basada en las clases CSS del juego
+const PIXEL_COLORS = [
+    {nombre: 'Celeste', clase: 'celeste-s', color: '#6ec6f1'},
+    {nombre: 'Blanco', clase: 'blanco-s', color: '#fff'},
+    {nombre: 'Verde', clase: 'verde-s', color: '#4caf50'},
+    {nombre: 'Azul', clase: 'azul-s', color: '#1976d2'},
+    {nombre: 'Rojo', clase: 'rojo-s', color: '#e53935'},
+    {nombre: 'Marrón', clase: 'marron-s', color: '#8d5524'},
+    {nombre: 'Amarillo', clase: 'amarillo-s', color: '#ffe082'},
+    {nombre: 'Negro', clase: 'negro-s', color: '#222'},
+    {nombre: 'Chartreuse', clase: 'chartreuse-s', color: '#7fff00'},
+    {nombre: 'Primavera', clase: 'primavera-s', color: '#00fa9a'},
+    {nombre: 'Cian', clase: 'cian-s', color: '#00bcd4'},
+    {nombre: 'Violeta', clase: 'violeta-s', color: '#8f00ff'},
+    {nombre: 'Magenta', clase: 'magenta-s', color: '#e040fb'},
+    {nombre: 'Rosa', clase: 'rosa-s', color: '#ff69b4'},
+    {nombre: 'Naranja', clase: 'naranja-s', color: '#ff9800'},
+    {nombre: 'Azul Celeste', clase: 'azulceleste-s', color: '#00cfff'},
+    {nombre: 'Borde', clase: 'borde', color: '#b0b0b0'},
+    {nombre: 'Celeste', clase: 'celeste', color: 'lightblue'},
+    {nombre: 'Blanco', clase: 'blanco', color: 'white'},
+    {nombre: 'Verde', clase: 'verde', color: 'green'},
+    {nombre: 'Azul', clase: 'azul', color: 'blue'},
+    {nombre: 'Rojo', clase: 'rojo', color: 'red'},
+    {nombre: 'Marrón', clase: 'marron', color: 'brown'},
+    {nombre: 'Amarillo', clase: 'amarillo', color: 'yellow'},
+    {nombre: 'Amarillo Verdoso', clase: 'amarillo-verdoso', color: 'yellowgreen'},
+    {nombre: 'Negro', clase: 'negro', color: 'black'},
+    {nombre: 'Primavera', clase: 'primavera', color: 'lawngreen'},
+    {nombre: 'Violeta', clase: 'violeta', color: 'violet'},
+    {nombre: 'Magenta', clase: 'magenta', color: 'magenta'},
+    {nombre: 'Rosa', clase: 'rosa', color: 'pink'},
+    {nombre: 'Naranja', clase: 'naranja', color: 'orangered'},
+    // ...agrega más si lo deseas...
+];
+
+// Color especial para vacío
+const COLOR_VACIO = {nombre: 'Vacío', clase: '', color: '#e0e0e0'};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Elementos
+    const form = document.getElementById('partida-form');
+    const matrizDiv = document.getElementById('matriz-editor');
+    const output = document.getElementById('codigo-output');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const colorPaletteDiv = document.getElementById('color-palette');
+    let matriz = [];
+    let selectedColorIdx = 0; // 0 = vacío
+    let isMouseDown = false;
+    let isTouching = false;
+
+    // Renderiza la paleta de colores
+    function renderColorPalette() {
+        colorPaletteDiv.innerHTML = '';
+        [COLOR_VACIO, ...PIXEL_COLORS].forEach((col, idx) => {
+            const btn = document.createElement('div');
+            btn.className = 'color-sample' + (selectedColorIdx === idx ? ' selected' : '');
+            btn.style.background = col.color;
+            btn.title = col.nombre + (col.clase ? ` (${col.clase})` : '');
+            btn.tabIndex = 0;
+            btn.onclick = () => {
+                selectedColorIdx = idx;
+                renderColorPalette();
+            };
+            btn.onkeydown = (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    selectedColorIdx = idx;
+                    renderColorPalette();
+                }
+            };
+            btn.innerHTML = idx === 0 ? '' : `<span>${col.nombre}</span>`;
+            colorPaletteDiv.appendChild(btn);
+        });
+    }
+
+    // Actualiza el editor de matriz según filas/columnas
+    function renderMatrizEditor(filas, columnas) {
+        matrizDiv.innerHTML = '';
+        matriz = matriz.length === filas && matriz[0]?.length === columnas
+            ? matriz
+            : Array.from({length: filas}, () => Array(columnas).fill(0));
+        const table = document.createElement('table');
+        table.style.borderCollapse = 'collapse';
+
+        // Eventos para pintar con mouse/touch
+        table.onmousedown = function(e) { isMouseDown = true; };
+        table.onmouseup = function(e) { isMouseDown = false; };
+        table.onmouseleave = function(e) { isMouseDown = false; };
+
+        table.ontouchstart = function(e) { isTouching = true; };
+        table.ontouchend = function(e) { isTouching = false; };
+        table.ontouchcancel = function(e) { isTouching = false; };
+
+        for (let y = 0; y < filas; y++) {
+            const tr = document.createElement('tr');
+            for (let x = 0; x < columnas; x++) {
+                const td = document.createElement('td');
+                td.className = 'matriz-cell';
+                let colorIdx = matriz[y][x];
+                const color = [COLOR_VACIO, ...PIXEL_COLORS][colorIdx] || COLOR_VACIO;
+                td.style.background = color.color;
+                td.title = color.nombre;
+
+                td.onclick = () => {
+                    matriz[y][x] = selectedColorIdx;
+                    renderMatrizEditor(filas, columnas);
+                };
+                td.onmouseenter = function(e) {
+                    if (isMouseDown) {
+                        matriz[y][x] = selectedColorIdx;
+                        renderMatrizEditor(filas, columnas);
+                    }
+                };
+                td.ontouchmove = function(e) {
+                    if (!isTouching) return;
+                    const touch = e.touches[0];
+                    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (el && el.classList.contains('matriz-cell')) {
+                        // Busca la posición de la celda
+                        for (let yy = 0; yy < filas; yy++) {
+                            for (let xx = 0; xx < columnas; xx++) {
+                                if (table.rows[yy].cells[xx] === el) {
+                                    matriz[yy][xx] = selectedColorIdx;
+                                }
+                            }
+                        }
+                        renderMatrizEditor(filas, columnas);
+                    }
+                };
+                tr.appendChild(td);
+            }
+            table.appendChild(tr);
+        }
+        matrizDiv.appendChild(table);
+    }
+
+    // Maneja el formulario
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        // Recoge datos
+        const id = form.id_partida.value.trim();
+        const nombre = form.nombre_partida.value.trim();
+        const filas = parseInt(form.filas.value);
+        const columnas = parseInt(form.columnas.value);
+
+        // Solo los colores usados en la matriz
+        let usados = new Set();
+        matriz.forEach(fila => fila.forEach(idx => { if (idx > 0) usados.add(idx); }));
+        const usadosArr = Array.from(usados).sort((a, b) => a - b);
+
+        // Genera referencias
+        let refObj = '';
+        usadosArr.forEach((idx, i) => {
+            const col = PIXEL_COLORS[idx - 1];
+            refObj += `        ${i + 1}: {nombre: '${col.nombre}', clase: '${col.clase}'}${i < usadosArr.length - 1 ? ',' : ''}\n`;
+        });
+
+        // Remapea la matriz a los índices usados (1,2,3...)
+        const idxMap = {};
+        usadosArr.forEach((idx, i) => { idxMap[idx] = i + 1; });
+        let matrizStr = matriz.map(fila =>
+            '        [' + fila.map(idx => idx === 0 ? 0 : idxMap[idx]).join(',') + ']'
+        ).join(',\n');
+
+        // Código para referencias
+        const refCode = `    '${id}': {\n${refObj}    }`;
+        // Código para partida
+        const partidaCode = `    '${id}': {\n        matriz: [\n${matrizStr}\n        ],\n        ref: referencias['${id}']\n    }`;
+        // Código para pestaña HTML
+        const tabHtml = `<div id="tab-${id}" class="tab-content">
+    <h2>${nombre}</h2>
+    <div class="juego-container">
+        <div id="juego-${id}"></div>
+    </div>
+    <div id="referencias-${id}"></div>
+</div>`;
+        // Botón en inicio
+        const btnHtml = `<button onclick="showTab('${id}')">${nombre}</button>`;
+
+        // Salida
+        output.value =
+`// --- En objeto referencias ---
+${refCode},
+
+// --- En objeto partidas ---
+${partidaCode},
+
+// --- En renderAll() ---
+renderReferencias(referencias['${id}'], 'referencias-${id}', '${id}');
+renderPartida('${id}', 'juego-${id}', referencias['${id}']);
+
+// --- En HTML (en el selector de partidas y pestañas) ---
+${btnHtml}
+${tabHtml}
+`;
+    };
+
+    // Actualiza matriz cuando cambian filas/columnas
+    function updateMatrizEditor() {
+        const filas = parseInt(form.filas.value) || 1;
+        const columnas = parseInt(form.columnas.value) || 1;
+        renderMatrizEditor(filas, columnas);
+    }
+
+    form.filas.oninput = updateMatrizEditor;
+    form.columnas.oninput = updateMatrizEditor;
+
+    // Copiar al portapapeles
+    copyBtn.onclick = function() {
+        output.select();
+        document.execCommand('copy');
+        copyBtn.textContent = '¡Copiado!';
+        setTimeout(() => copyBtn.textContent = 'Copiar código', 1200);
+    };
+
+    // Descargar como .js (sin la parte HTML)
+    downloadBtn.onclick = function() {
+        let code = output.value;
+        // Elimina la sección HTML (desde "// --- En HTML" hasta el final)
+        const idx = code.indexOf('// --- En HTML');
+        if (idx !== -1) {
+            code = code.substring(0, idx).trim();
+        }
+        // Nombre sugerido
+        const id = form.id_partida.value.trim() || 'pixelart';
+        const blob = new Blob([code], {type: 'application/javascript'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = id + '.js';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }, 100);
+    };
+
+    // Inicializa
+    renderColorPalette();
+    updateMatrizEditor();
+});
+    </script>
+</body>
+</html>

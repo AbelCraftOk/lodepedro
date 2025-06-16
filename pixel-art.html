@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pixel Art Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0e7ef 0%, #b3c6e0 100%);
+            text-align: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #tabs {
+            margin: 24px 0 10px 0;
+        }
+        .tab-btn {
+            padding: 10px 28px;
+            margin: 0 4px;
+            border: none;
+            background: #1976d2;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 6px #0001;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: #fff;
+            color: #1976d2;
+            border-bottom: 2px solid #1976d2;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .juego-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 24px 0 10px 0;
+        }
+        /* Aplica a todos los divs de juego y referencias que empiecen con "juego-" o "referencias-" */
+        [id^="juego-"] {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px #0002;
+            padding: 18px 18px 14px 18px;
+            margin: 0;
+            display: grid;
+            gap: 0 !important;
+            border-spacing: 0;
+            width: max-content;
+        }
+        [id^="referencias-"] {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+        }
+        .pixel-btn {
+            width: 32px;
+            height: 32px;
+            aspect-ratio: 1 / 1;
+            min-width: 0;
+            min-height: 0;
+            max-width: 100%;
+            max-height: 100%;
+            padding: 0;
+            margin: 0;
+            background: #e0e0e0;
+            cursor: pointer;
+            outline: none;
+            font-size: 16px;
+            color: #222;
+            font-weight: bold;
+            line-height: 1;
+            box-sizing: border-box;
+            display: block;
+            border-radius: 0;
+            transition: background 0.15s, border 0.15s, color 0.15s;
+            user-select: none;
+            overflow: hidden;
+            border: none;
+        }
+        /* Bordes para botones exteriores */
+        .pixel-btn.b-top    { border-top:    2px solid #b0b0b0; }
+        .pixel-btn.b-bottom { border-bottom: 2px solid #b0b0b0; }
+        .pixel-btn.b-left   { border-left:   2px solid #b0b0b0; }
+        .pixel-btn.b-right  { border-right:  2px solid #b0b0b0; }
+        .pixel-btn.b-corner.tl { border-top-left-radius: 8px; }
+        .pixel-btn.b-corner.tr { border-top-right-radius: 8px; }
+        .pixel-btn.b-corner.bl { border-bottom-left-radius: 8px; }
+        .pixel-btn.b-corner.br { border-bottom-right-radius: 8px; }
+        .pixel-btn.revealed.celeste-s { background: #6ec6f1; }
+        .pixel-btn.revealed.blanco-s { background: #fff; }
+        .pixel-btn.revealed.verde-s { background: #4caf50; }
+        .pixel-btn.revealed.azul-s { background: #1976d2; }
+        .pixel-btn.revealed.rojo-s { background: #e53935; }
+        .pixel-btn.revealed.marron-s { background: #8d5524; }
+        .pixel-btn.revealed.amarillo-s { background: #ffe082; }
+        .pixel-btn.revealed.negro-s { background: #222; color: #fff; }
+        .pixel-btn.revealed.chartreuse-s { background: #7fff00; }
+        .pixel-btn.revealed.primavera-s { background: #00fa9a; }
+        .pixel-btn.revealed.cian-s { background: #00bcd4; }
+        .pixel-btn.revealed.violeta-s { background: #8f00ff; }
+        .pixel-btn.revealed.magenta-s { background: #e040fb; }
+        .pixel-btn.revealed.rosa-s { background: #ff69b4; }
+        .pixel-btn.revealed.naranja-s { background: #ff9800; }
+        .pixel-btn.revealed.azulceleste-s { background: #00cfff; }
+        .pixel-btn.revealed.borde { background: #b0b0b0; }
+        .pixel-btn.revealed.celeste { background: lightblue; }
+        .pixel-btn.revealed.blanco { background: white; }
+        .pixel-btn.revealed.verde { background: green; }
+        .pixel-btn.revealed.azul { background: blue; }
+        .pixel-btn.revealed.rojo { background: red; }
+        .pixel-btn.revealed.marron { background: brown; }
+        .pixel-btn.revealed.amarillo { background: yellow; }
+        .pixel-btn.revealed.amarillo-verdoso { background: yellowgreen; }
+        .pixel-btn.revealed.negro { background: black; }
+        .pixel-btn.revealed.primavera { background: lawngreen; }
+        .pixel-btn.revealed.violeta { background: violet; }
+        .pixel-btn.revealed.magenta { background: magenta; }
+        .pixel-btn.revealed.rosa { background: pink; }
+        .pixel-btn.revealed.naranja { background: orangered; }
+        #referencias {
+            margin-top: 20px;
+        }
+        #referencias-p-001, #referencias-p-002, #referencias-p-003, #referencias-p-004, #referencias-p-005, #referencias-p-006 {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+        }
+        .ref-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            background: #f5f8fa;
+            border-radius: 6px;
+            padding: 4px 10px 4px 4px;
+            box-shadow: 0 1px 4px #0001;
+        }
+        .ref-radio {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            accent-color: #1976d2;
+            cursor: pointer;
+        }
+        .ref-label {
+            display: flex;
+            align-items: center;
+            font-size: 17px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        h1 {
+            color: #1976d2;
+            margin-top: 24px;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #0001;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.4em;
+        }
+        button:not(.pixel-btn):not(.tab-btn) {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 22px;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 8px 8px 0 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0001;
+            transition: background 0.2s;
+        }
+        button:not(.pixel-btn):not(.tab-btn):hover {
+            background: #1256a3;
+        }
+        /* Elimina espacio extra entre celdas en grid */
+        #juego-p-001, #juego-p-002, #juego-p-003, #juego-p-004, #juego-p-005, #juego-p-006 {
+            /* Para navegadores que aplican espacio por defecto */
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pixel Art Game</h1>
+    <div id="tabs">
+        <button class="button" onclick="window.location.href='./index.html'" style="margin-bottom:15px;">Volver al Launcher</button>
+        <button class="tab-btn" data-tab="inicio" id="btn-inicio" style="display:none;">Inicio</button>
+        <!-- Nueva pestaña para propio pixel art -->
+        <button class="tab-btn" data-tab="propio" id="btn-propio">Mi propio Pixel Art</button>
+    </div>
+    <div id="tab-inicio" class="tab-content active">
+        <h2>Elige una partida:</h2>
+        <button onclick="showTab('p-001')">Bandera Argentina</button>
+        <button onclick="showTab('p-002')">Bandera Francia</button>
+        <button onclick="showTab('p-003')">Árbol</button>
+        <button onclick="showTab('p-004')">Bandera de España</button>
+        <button onclick="showTab('p-005')">Flor</button>
+        <button onclick="showTab('p-006')">Patito</button>
+        <button onclick="showTab('p-007')">Loro Mayor</button>
+        <button onclick="showTab('p-008')">Cerdito</button>
+        <button onclick="showTab('p-009')">Conejito</button>
+        <button onclick="showTab('p-010')">Perrito</button>
+        <button onclick="showTab('p-011')">Loro Menor</button>
+        <button onclick="showTab('p-012')">Corazon</button>
+        <button onclick="showTab('p-013')">Sandia</button>
+    </div>
+    <div id="tab-p-001" class="tab-content">
+        <h2>Bandera Argentina</h2>
+        <div class="juego-container">
+            <div id="juego-p-001"></div>
+        </div>
+        <div id="referencias-p-001"></div>
+    </div>
+    <div id="tab-p-002" class="tab-content">
+        <h2>Bandera Francia</h2>
+        <div class="juego-container">
+            <div id="juego-p-002"></div>
+        </div>
+        <div id="referencias-p-002"></div>
+    </div>
+    <div id="tab-p-003" class="tab-content">
+        <h2>Árbol</h2>
+        <div class="juego-container">
+            <div id="juego-p-003"></div>
+        </div>
+        <div id="referencias-p-003"></div>
+    </div>
+    <div id="tab-p-004" class="tab-content">
+        <h2>Bandera de España</h2>
+        <div class="juego-container">
+            <div id="juego-p-004"></div>
+        </div>
+        <div id="referencias-p-004"></div>
+    </div>
+    <div id="tab-p-005" class="tab-content">
+        <h2>Flor</h2>
+        <div class="juego-container">
+            <div id="juego-p-005"></div>
+        </div>
+        <div id="referencias-p-005"></div>
+    </div>
+    <div id="tab-p-006" class="tab-content">
+        <h2>Patito</h2>
+        <div class="juego-container">
+            <div id="juego-p-006"></div>
+        </div>
+        <div id="referencias-p-006"></div>
+    </div>
+    <div id="tab-propio" class="tab-content">
+        <h2>Mi propio Pixel Art</h2>
+        <input type="file" id="file-propio" accept=".js">
+        <div id="juego-propio-container" style="margin-top:20px;">
+            <div class="juego-container">
+                <div id="juego-propio"></div>
+            </div>
+            <div id="referencias-propio"></div>
+        </div>
+    </div>
+    <div id="tab-p-007" class="tab-content">
+        <h2>Loro</h2>
+        <div class="juego-container">
+            <div id="juego-p-007"></div>
+        </div>
+        <div id="referencias-p-007"></div>
+    </div>
+    <div id="tab-p-008" class="tab-content">
+        <h2>Cerdito</h2>
+        <div class="juego-container">
+            <div id="juego-p-008"></div>
+        </div>
+        <div id="referencias-p-008"></div>
+    </div>
+    <div id="tab-p-009" class="tab-content">
+        <h2>Conejito</h2>
+        <div class="juego-container">
+            <div id="juego-p-009"></div>
+        </div>
+        <div id="referencias-p-009"></div>
+    </div>
+    <div id="tab-p-010" class="tab-content">
+        <h2>Perrito</h2>
+        <div class="juego-container">
+            <div id="juego-p-010"></div>
+        </div>
+        <div id="referencias-p-010"></div>
+    </div>
+    <div id="tab-p-011" class="tab-content">
+        <h2>Loro Manor</h2>
+        <div class="juego-container">
+            <div id="juego-p-011"></div>
+        </div>
+        <div id="referencias-p-011"></div>
+    </div>
+    <div id="tab-p-012" class="tab-content">
+        <h2>Corazon</h2>
+        <div class="juego-container">
+            <div id="juego-p-012"></div>
+        </div>
+        <div id="referencias-p-012"></div>
+    </div>
+    <div id="tab-p-013" class="tab-content">
+        <h2>Sandia</h2>
+        <div class="juego-container">
+            <div id="juego-p-013"></div>
+        </div>
+        <div id="referencias-p-013"></div>
+    </div>
+
+    <script>
+        // --- Sistema de pestañas ---
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(div => {
+                div.classList.toggle('active', div.id === 'tab-' + tab);
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+            document.getElementById('btn-inicio').style.display = (tab !== 'inicio') ? '' : 'none';
+        }
+        // Botón de navegación "inicio"
+        document.getElementById('btn-inicio').onclick = () => showTab('inicio');
+        document.getElementById('btn-propio').onclick = () => showTab('propio');
+
+        // --- Referencias de colores por partida ---
+        const referencias = {
+            'p-001': {
+                1: {nombre: 'Celeste', clase: 'celeste-s'},
+                2: {nombre: 'Blanco', clase: 'blanco'}
+            },
+            'p-002': {
+                1: {nombre: 'Azul', clase: 'azul'},
+                2: {nombre: 'Blanco', clase: 'blanco'},
+                3: {nombre: 'Rojo', clase: 'rojo'}
+            },
+            'p-003': {
+                1: {nombre: "", clase: "borde"},
+                2: {nombre: 'Verde', clase: 'verde-s'},
+                3: {nombre: 'Marrón', clase: 'marron-s'},
+                4: {nombre: 'Amarillo', clase: 'amarillo'},
+                5: {nombre: 'Negro', clase: 'negro'}
+            },
+            'p-004': {
+                1: {nombre: 'Rojo', clase: 'rojo-s'},
+                2: {nombre: 'Amarillo', clase: 'amarillo'}
+            },
+            'p-005': {
+                1: {nombre: 'Celeste', clase: 'celeste-s'},
+                2: {nombre: 'Verde', clase: 'verde-s'},
+                3: {nombre: 'Verde', clase: 'verde'},
+                4: {nombre: 'Rojo', clase: 'rojo'},
+                5: {nombre: 'Amarillo', clase: 'amarillo'}
+            },
+            'p-006': {
+                1: {nombre: 'Naranja', clase: 'naranja-s'},
+                2: {nombre: 'Azul', clase: 'azul'},
+                3: {nombre: 'Amarillo', clase: 'amarillo'},
+                4: {nombre: 'Negro', clase: 'negro'}
+            },
+            'p-007': {
+                1: {nombre: 'Verde', clase: 'verde-s'},
+                2: {nombre: 'Azul', clase: 'azul-s'},
+                3: {nombre: 'Naranja', clase: 'naranja-s'},
+                4: {nombre: 'Borde', clase: 'borde'},
+                5: {nombre: 'Blanco', clase: 'blanco'},
+                6: {nombre: 'Negro', clase: 'negro'}
+            },
+            'p-008': {
+                1: {nombre: 'Rosa', clase: 'rosa-s'},
+                2: {nombre: 'Borde', clase: 'borde'},
+                3: {nombre: 'Blanco', clase: 'blanco'},
+                4: {nombre: 'Negro', clase: 'negro'},
+                5: {nombre: 'Rosa', clase: 'rosa'}
+            },
+            'p-009': {
+                1: {nombre: 'Borde', clase: 'borde'},
+                2: {nombre: 'Blanco', clase: 'blanco'},
+                3: {nombre: 'Negro', clase: 'negro'},
+                4: {nombre: 'Rosa', clase: 'rosa'}
+            },
+            'p-010': {
+                1: {nombre: 'Rosa', clase: 'rosa-s'},
+                2: {nombre: 'Borde', clase: 'borde'},
+                3: {nombre: 'Blanco', clase: 'blanco'},
+                4: {nombre: 'Negro', clase: 'negro'}
+            },
+            'p-011': {
+                1: {nombre: 'Verde', clase: 'verde-s'},
+                2: {nombre: 'Naranja', clase: 'naranja-s'},
+                3: {nombre: 'Borde', clase: 'borde'},
+                4: {nombre: 'Verde', clase: 'verde'},
+                5: {nombre: 'Negro', clase: 'negro'}
+            },
+            'p-012': {
+                1: {nombre: 'Rojo', clase: 'rojo-s'},
+                2: {nombre: 'Borde', clase: 'borde'},
+                3: {nombre: 'Blanco', clase: 'blanco'},
+                4: {nombre: 'Rojo', clase: 'rojo'},
+                5: {nombre: 'Negro', clase: 'negro'}
+            },
+            'p-013': {
+                1: {nombre: 'Verde', clase: 'verde-s'},
+                2: {nombre: 'Rojo', clase: 'rojo-s'},
+                3: {nombre: 'Amarillo', clase: 'amarillo-s'},
+                4: {nombre: 'Borde', clase: 'borde'},
+                5: {nombre: 'Verde', clase: 'verde'},
+                6: {nombre: 'Rojo', clase: 'rojo'},
+                7: {nombre: 'Negro', clase: 'negro'}
+            },
+        };
+
+        // --- Datos de las partidas ---
+        const partidas = {
+            'p-001': {
+                matriz: [
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [2,2,2,2,2,2,2,2,2,2],
+                    [2,2,2,2,2,2,2,2,2,2],
+                    [2,2,2,2,2,2,2,2,2,2],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1]
+                ],
+                ref: referencias['p-001']
+            },
+            'p-002': {
+                matriz: [
+                    [1,1,1,2,2,2,3,3,3],
+                    [1,1,1,2,2,2,3,3,3],
+                    [1,1,1,2,2,2,3,3,3],
+                    [1,1,1,2,2,2,3,3,3],
+                    [1,1,1,2,2,2,3,3,3],
+                    [1,1,1,2,2,2,3,3,3]
+                ],
+                ref: referencias['p-002']
+            },
+            'p-003': {
+                matriz: [
+                    [1,1,1,2,2,1,1,1],
+                    [1,1,2,2,2,2,1,1],
+                    [1,2,2,2,2,2,2,1],
+                    [1,1,1,2,2,1,1,1],
+                    [1,1,1,3,3,1,1,1],
+                    [1,1,3,3,3,3,1,1],
+                    [1,4,4,5,5,4,4,1],
+                    [1,1,1,5,5,1,1,1]
+                ],
+                ref: referencias['p-003']
+            },
+            'p-004': {
+                matriz: [
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [2,2,2,2,2,2,2,2,2,2],
+                    [2,2,2,2,2,2,2,2,2,2],
+                    [2,2,2,2,2,2,2,2,2,2],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1],
+                    [1,1,1,1,1,1,1,1,1,1]
+                ],
+                ref: referencias['p-004']
+            },
+            'p-005': {
+                matriz: [
+                    [1,1,1,1,1,1,1,1,1,1,5,5],
+                    [1,1,1,4,1,4,1,4,1,1,5,5],
+                    [1,1,1,4,4,4,4,4,1,1,1,1],
+                    [1,1,1,4,4,4,4,4,1,1,1,1],
+                    [1,1,1,4,4,4,4,4,1,1,1,1],
+                    [1,1,1,1,4,4,4,1,1,1,1,1],
+                    [2,2,2,2,2,3,2,2,2,2,2,2],
+                    [2,2,2,2,3,3,2,2,2,2,2,2],
+                    [2,2,2,2,2,3,2,2,2,2,2,2],
+                    [2,2,2,2,2,3,3,2,2,2,2,2],
+                    [2,2,2,2,2,3,2,2,2,2,2,2],
+                    [2,2,2,2,2,2,2,2,2,2,2,2]
+                ],
+                ref: referencias['p-005']
+            },
+            'p-006': {
+                matriz: [
+                    [2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+                    [2,2,2,2,3,3,3,3,2,2,2,2,2,2],
+                    [2,2,2,3,3,3,3,3,3,2,2,2,2,2],
+                    [2,2,2,1,3,4,3,3,3,2,2,2,2,2],
+                    [2,1,1,1,3,3,3,3,3,2,2,2,2,2],
+                    [2,2,1,1,1,3,3,3,2,2,2,2,2,2],
+                    [2,2,2,2,3,3,3,2,3,3,3,2,3,2],
+                    [2,2,2,3,3,3,3,3,3,3,3,4,3,2],
+                    [2,2,3,3,3,3,4,3,3,3,4,3,3,2],
+                    [2,2,3,3,3,3,3,4,4,4,3,3,3,2],
+                    [2,2,3,3,3,3,3,3,3,3,3,3,3,2],
+                    [2,2,2,3,3,3,3,3,3,3,3,3,2,2],
+                    [2,2,2,2,3,3,3,3,3,3,3,2,2,2],
+                    [2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+                ],
+                ref: referencias['p-006']
+            },
+            'p-007': {
+                matriz: [
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,6,6,6,6,6,6,6,4,4,4,4,4,4,4,4,4],
+                [4,4,6,6,1,1,1,1,1,6,4,4,4,4,4,4,4,4,4,4],
+                [4,6,3,3,1,6,5,1,6,4,4,4,4,4,4,4,4,4,4,4],
+                [4,6,3,3,1,6,5,1,6,4,4,4,4,4,4,4,4,4,4,4],
+                [4,6,3,6,1,5,5,1,1,6,6,6,6,6,4,4,4,4,4,4],
+                [4,4,6,4,6,1,1,1,1,1,1,1,2,2,6,4,4,4,4,4],
+                [4,4,4,4,6,1,1,1,1,1,1,2,2,6,6,6,6,6,6,4],
+                [4,4,4,4,6,1,1,6,1,1,2,2,1,2,2,2,2,2,6,4],
+                [4,4,4,4,4,6,1,1,6,6,6,1,2,2,2,2,2,6,4,4],
+                [4,4,4,4,4,4,6,1,1,1,1,6,6,6,6,6,6,4,4,4],
+                [4,4,4,4,4,4,4,6,6,6,6,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,3,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,3,3,3,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
+            ],
+            ref: referencias['p-007']
+        },
+        'p-008': {
+            matriz: [
+                [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+                [2,4,4,4,4,4,2,2,2,2,2,2,2,4,4,4,4,4,2],
+                [2,4,5,5,5,5,4,2,2,2,2,2,4,5,5,5,5,4,2],
+                [2,4,5,1,1,5,4,4,4,4,4,4,4,5,1,1,5,4,2],
+                [2,4,5,1,5,5,4,5,5,5,5,5,4,5,5,1,5,4,2],
+                [2,4,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,4,2],
+                [2,2,4,4,4,5,5,5,5,5,5,5,5,5,4,4,4,2,2],
+                [2,2,2,4,5,5,5,5,5,5,5,5,5,5,5,4,2,2,2],
+                [2,2,2,4,5,4,3,5,5,5,5,5,4,3,5,4,2,2,2],
+                [2,2,2,4,5,4,4,5,1,1,1,5,4,4,5,4,2,2,2],
+                [2,2,2,4,5,5,5,1,4,1,4,1,5,5,5,4,2,2,2],
+                [2,2,2,2,4,5,5,5,1,1,1,5,5,5,4,2,2,2,2],
+                [2,2,2,2,2,4,5,5,5,5,5,5,5,4,2,2,2,2,2],
+                [2,2,2,2,2,2,4,4,4,4,4,4,4,2,2,2,2,2,2],
+                [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+            ],
+            ref: referencias['p-008']
+        },
+        'p-009': {
+            matriz: [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,3,3,1,3,3,1,1,1,1,1],
+                [1,1,1,1,3,2,3,1,3,2,3,1,1,1,1],
+                [1,1,1,3,2,2,3,1,3,2,2,3,1,1,1],
+                [1,1,1,3,2,2,3,1,3,2,2,3,1,1,1],
+                [1,1,1,3,2,2,3,1,3,2,2,3,1,1,1],
+                [1,1,1,3,2,2,3,1,3,2,2,3,1,1,1],
+                [1,1,1,3,2,2,3,1,3,2,2,3,1,1,1],
+                [1,1,1,3,2,4,3,1,3,4,2,3,1,1,1],
+                [1,1,1,3,2,4,4,3,4,4,2,3,1,1,1],
+                [1,1,1,1,3,4,4,4,4,4,3,1,1,1,1],
+                [1,1,1,3,4,4,4,4,4,4,4,3,1,1,1],
+                [1,1,3,4,4,4,4,4,4,4,4,4,3,1,1],
+                [1,1,3,4,4,4,4,4,4,4,4,4,3,1,1],
+                [1,3,4,4,3,4,4,4,4,4,3,4,4,3,1],
+                [1,3,4,4,3,2,2,3,2,2,3,4,4,3,1],
+                [1,3,4,2,2,2,2,2,2,2,2,2,4,3,1],
+                [1,1,3,2,2,2,2,2,2,2,2,2,3,1,1],
+                [1,1,1,3,3,3,3,3,3,3,3,3,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ],
+            ref: referencias['p-009']
+        },
+        'p-010': {
+            matriz: [
+                [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+                [2,2,2,4,4,2,4,4,4,4,4,2,4,4,2,2,2],
+                [2,4,4,3,3,4,3,3,3,3,3,4,3,3,4,4,2],
+                [2,4,3,3,4,3,3,3,3,3,3,3,4,3,3,4,2],
+                [2,4,3,3,4,3,3,3,3,3,3,3,4,3,3,4,2],
+                [2,4,4,4,3,3,3,3,3,3,3,3,3,4,4,4,2],
+                [2,2,4,3,4,4,3,3,3,3,3,4,4,3,4,2,2],
+                [2,2,4,3,4,4,3,3,3,3,3,4,4,3,4,2,2],
+                [2,2,4,3,3,3,3,4,4,4,3,3,3,3,4,2,2],
+                [2,2,2,4,3,4,3,3,4,3,3,4,3,4,2,2,2],
+                [2,2,2,4,3,3,4,4,1,4,4,3,3,4,2,2,2],
+                [2,2,2,2,4,3,4,1,1,1,4,3,4,2,2,2,2],
+                [2,2,2,2,2,4,4,1,1,1,4,4,2,2,2,2,2],
+                [2,2,2,2,2,2,2,4,4,4,2,2,2,2,2,2,2],
+                [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+            ],
+            ref: referencias['p-010']
+        },
+        'p-011': {
+            matriz: [
+            [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
+            [3,3,3,5,5,5,5,5,3,3,3,3,3,3,3,3,3],
+            [3,3,5,2,2,1,1,1,5,5,3,3,3,3,3,3,3],
+            [3,5,2,2,2,1,5,1,1,5,3,3,3,3,3,3,3],
+            [3,5,2,2,2,1,5,1,5,3,3,3,3,3,3,3,3],
+            [3,5,2,5,5,1,1,1,5,5,5,3,3,3,3,3,3],
+            [3,5,5,3,5,1,1,4,4,4,4,5,5,3,3,3,3],
+            [3,3,3,3,5,1,1,4,4,4,4,4,5,5,5,5,3],
+            [3,3,3,3,5,1,1,1,4,4,4,1,1,1,5,3,3],
+            [3,3,3,3,3,5,1,1,1,1,1,1,1,5,3,3,3],
+            [3,3,3,3,3,3,5,5,5,5,5,5,5,3,3,3,3],
+            [3,3,3,3,3,3,3,5,3,5,3,3,3,3,3,3,3],
+            [3,3,3,3,3,3,5,5,5,5,3,3,3,3,3,3,3],
+            [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]
+        ],
+        ref: referencias['p-011']
+        },
+        'p-012': {
+            matriz: [
+                [2,2,2,2,2,2,2,2,2,2,2],
+                [2,2,2,5,5,2,5,5,2,2,2],
+                [2,2,5,1,1,5,1,1,5,2,2],
+                [2,5,1,3,1,1,1,4,1,5,2],
+                [2,5,1,4,1,4,1,4,1,5,2],
+                [2,5,1,4,1,4,1,4,1,5,2],
+                [2,2,5,4,4,4,4,4,5,2,2],
+                [2,2,2,5,4,4,4,5,2,2,2],
+                [2,2,2,2,5,4,5,2,2,2,2],
+                [2,2,2,2,2,5,2,2,2,2,2],
+                [2,2,2,2,2,2,2,2,2,2,2]
+            ],
+            ref: referencias['p-012']
+        },
+        'p-013': {
+            matriz: [
+                [4,4,4,4,4,4,4,4,4,4,4,4],
+                [4,4,7,7,7,7,7,7,7,7,4,4],
+                [4,7,3,2,2,7,6,2,2,3,7,4],
+                [4,7,3,6,2,2,2,7,6,3,7,4],
+                [4,7,1,3,6,7,6,2,3,1,7,4],
+                [4,4,7,5,3,3,3,3,1,7,4,4],
+                [4,4,4,7,1,1,1,5,7,4,4,4],
+                [4,4,4,4,7,7,7,7,4,4,4,4],
+                [4,4,4,4,4,4,4,4,4,4,4,4]
+            ],
+            ref: referencias['p-013']
+        }
+    };
+
+        // --- Estado de referencia activa por partida ---
+        const referenciaActiva = {
+            'p-001': '1',
+            'p-002': '1',
+            'p-003': '1',
+            'p-004': '1',
+            'p-005': '1',
+            'p-006': '1',
+            'p-007': '1',
+            'p-008': '1',
+            'p-009': '1',
+            'p-010': '1',
+            'p-011': '1',
+            'p-012': '1',
+            'p-013': '1'
+        };
+
+        // --- Estado de referencias completadas por partida ---
+        const referenciasCompletadas = {
+            'p-001': [],
+            'p-002': [],
+            'p-003': [],
+            'p-004': [],
+            'p-005': [],
+            'p-006': [],
+            'p-007': [],
+            'p-008': [],
+            'p-009': [],
+            'p-010': [],
+            'p-011': [],
+            'p-012': [],
+            'p-013': []
+        };
+
+        // --- Renderizar referencias con selector positivo/negativo ---
+        function renderReferencias(ref, refDivId, partidaId, mostrarFinal = false) {
+            const refDiv = document.getElementById(refDivId);
+            refDiv.innerHTML = '';
+            const refList = Object.entries(ref);
+            const refContainer = document.createElement('div');
+            refContainer.style.display = 'flex';
+            refContainer.style.flexDirection = 'column';
+            refContainer.style.alignItems = 'flex-start';
+
+            // Radio group name único por partida
+            const radioName = 'ref-radio-' + partidaId;
+            refList.forEach(([num, info], idx) => {
+                const group = document.createElement('div');
+                group.className = 'ref-group';
+
+                // Si mostrarFinal, mostrar todas las opciones con check si están completadas
+                if (mostrarFinal) {
+                    const label = document.createElement('label');
+                    label.className = 'ref-label';
+                    label.textContent = `${num} = ${info.nombre}`;
+                    if (referenciasCompletadas[partidaId].includes(num)) {
+                        label.textContent += ' ✅';
+                    }
+                    group.appendChild(label);
+                    refContainer.appendChild(group);
+                    return;
+                }
+
+                // Si la referencia está completada, no mostrarla
+                if (referenciasCompletadas[partidaId].includes(num)) {
+                    return;
+                }
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.className = 'ref-radio';
+                radio.name = radioName;
+                radio.value = num;
+                radio.checked = referenciaActiva[partidaId] == num;
+                radio.onclick = function() {
+                    setReferenciaActiva(partidaId, num);
+                };
+
+                const label = document.createElement('label');
+                label.className = 'ref-label';
+                label.textContent = `${num} = ${info.nombre}`;
+
+                group.appendChild(radio);
+                group.appendChild(label);
+                refContainer.appendChild(group);
+            });
+
+            refDiv.appendChild(refContainer);
+        }
+
+        // --- Verifica si todos los píxeles de un color están revelados ---
+        function isColorCompletado(partidaId, color) {
+            const matriz = partidas[partidaId].matriz;
+            const estado = window._pixArtEstados[partidaId];
+            let completado = true;
+            for (let y = 0; y < matriz.length; y++) {
+                for (let x = 0; x < matriz[0].length; x++) {
+                    if (matriz[y][x] == color && !estado[y][x]) {
+                        completado = false;
+                        break;
+                    }
+                }
+                if (!completado) break;
+            }
+            return completado;
+        }
+
+        // --- Busca el siguiente color no completado ---
+        function getSiguienteColor(partidaId, actual) {
+            const refKeys = Object.keys(referencias[partidaId]);
+            const idx = refKeys.indexOf(actual);
+            for (let i = idx + 1; i < refKeys.length; i++) {
+                if (!referenciasCompletadas[partidaId].includes(refKeys[i])) {
+                    return refKeys[i];
+                }
+            }
+            for (let i = 0; i < idx; i++) {
+                if (!referenciasCompletadas[partidaId].includes(refKeys[i])) {
+                    return refKeys[i];
+                }
+            }
+            return null;
+        }
+
+        // --- Renderizar cada partida ---
+        function renderPartida(id, contenedorId, ref) {
+            const matriz = partidas[id].matriz;
+            const contenedor = document.getElementById(contenedorId);
+            // --- GUARDAR ESTADO DE PIXELES REVELADOS ---
+            window._pixArtEstados = window._pixArtEstados || {};
+            if (!window._pixArtEstados[id]) {
+                window._pixArtEstados[id] = matriz.map(fila => fila.map(() => false));
+            }
+            const estado = window._pixArtEstados[id];
+
+            contenedor.innerHTML = '';
+            contenedor.style.display = 'grid';
+            contenedor.style.gridTemplateColumns = `repeat(${matriz[0].length}, 32px)`;
+            contenedor.style.gap = '0';
+            let isMouseDown = false;
+
+            // Para corregir: Revelar el primer pixel al hacer mouse down
+            contenedor.onmousedown = function(e) {
+                isMouseDown = true;
+                // Revelar si el target es un pixel-btn válido
+                if (e.target && e.target.classList.contains('pixel-btn')) {
+                    e.target.dispatchEvent(new Event('mouseenter'));
+                }
+            };
+            contenedor.onmouseup = () => { isMouseDown = false; };
+            contenedor.onmouseleave = () => { isMouseDown = false; };
+
+            matriz.forEach((fila, y) => {
+                fila.forEach((color, x) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'pixel-btn';
+                    btn.dataset.color = color;
+                    btn.dataset.num = color;
+                    btn.title = `(${y+1},${x+1})`;
+                    btn.style.gridRow = (y + 1);
+                    btn.style.gridColumn = (x + 1);
+
+                    // Clasificación de bordes exteriores/interiores
+                    const rows = matriz.length;
+                    const cols = matriz[0].length;
+                    let borderClasses = [];
+                    // Esquina superior izquierda
+                    if (y === 0 && x === 0) {
+                        borderClasses.push('b-top', 'b-left', 'b-corner', 'tl');
+                    }
+                    // Esquina superior derecha
+                    else if (y === 0 && x === cols - 1) {
+                        borderClasses.push('b-top', 'b-right', 'b-corner', 'tr');
+                    }
+                    // Esquina inferior izquierda
+                    else if (y === rows - 1 && x === 0) {
+                        borderClasses.push('b-bottom', 'b-left', 'b-corner', 'bl');
+                    }
+                    // Esquina inferior derecha
+                    else if (y === rows - 1 && x === cols - 1) {
+                        borderClasses.push('b-bottom', 'b-right', 'b-corner', 'br');
+                    }
+                    // Bordes superiores
+                    else if (y === 0) {
+                        borderClasses.push('b-top');
+                    }
+                    // Bordes inferiores
+                    else if (y === rows - 1) {
+                        borderClasses.push('b-bottom');
+                    }
+                    // Bordes izquierdos
+                    else if (x === 0) {
+                        borderClasses.push('b-left');
+                    }
+                    // Bordes derechos
+                    else if (x === cols - 1) {
+                        borderClasses.push('b-right');
+                    }
+                    // Los interiores no llevan borde
+
+                    if (borderClasses.length > 0) {
+                        btn.className += ' ' + borderClasses.join(' ');
+                    }
+
+                    if (color === 0) {
+                        btn.style.visibility = 'hidden';
+                        btn.disabled = true;
+                    } else if (estado[y][x]) {
+                        btn.classList.add('revealed');
+                        btn.textContent = '';
+                        if (ref[color]) btn.classList.add(ref[color].clase);
+                    } else {
+                        btn.textContent = btn.dataset.num;
+                    }
+                    // Revelar color solo si es la referencia activa
+                    function revealIfActive() {
+                        if (!btn.classList.contains('revealed') && color !== 0 && referenciaActiva[id] == color) {
+                            btn.classList.add('revealed');
+                            btn.textContent = '';
+                            if (ref[color]) btn.classList.add(ref[color].clase);
+                            estado[y][x] = true;
+
+                            // --- NUEVO: Verificar si se completó el color ---
+                            if (isColorCompletado(id, color)) {
+                                if (!referenciasCompletadas[id].includes(String(color))) {
+                                    referenciasCompletadas[id].push(String(color));
+                                }
+                                // Buscar siguiente color no completado
+                                const siguiente = getSiguienteColor(id, String(color));
+                                if (siguiente) {
+                                    referenciaActiva[id] = siguiente;
+                                    // Volver a renderizar referencias y partida
+                                    renderReferencias(ref, 'referencias-' + id, id);
+                                    renderPartida(id, contenedorId, ref);
+                                } else {
+                                    // Felicitar y mostrar todas las opciones con check
+                                    renderReferencias(ref, 'referencias-' + id, id, true);
+                                    setTimeout(() => {
+                                        alert('¡Felicidades! Has completado la partida.');
+                                    }, 100);
+                                }
+                            }
+                        }
+                    }
+                    btn.onclick = revealIfActive;
+                    btn.onmouseenter = function(e) {
+                        if (isMouseDown) revealIfActive();
+                    };
+                    btn.ontouchstart = function(e) {
+                        e.preventDefault();
+                        revealIfActive();
+                    };
+                    btn.ontouchmove = function(e) {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+                        if (el && el.classList.contains('pixel-btn') && !el.classList.contains('revealed') && el.dataset.color !== "0" && referenciaActiva[id] == el.dataset.color) {
+                            el.classList.add('revealed');
+                            el.textContent = '';
+                            if (ref[el.dataset.color]) el.classList.add(ref[el.dataset.color].clase);
+                            // Buscar posición y guardar estado
+                            const btns = Array.from(contenedor.children);
+                            const idx = btns.indexOf(el);
+                            if (idx !== -1) {
+                                const row = Math.floor(idx / matriz[0].length);
+                                const col = idx % matriz[0].length;
+                                estado[row][col] = true;
+                                // --- NUEVO: Verificar si se completó el color ---
+                                if (isColorCompletado(id, el.dataset.color)) {
+                                    if (!referenciasCompletadas[id].includes(String(el.dataset.color))) {
+                                        referenciasCompletadas[id].push(String(el.dataset.color));
+                                    }
+                                    const siguiente = getSiguienteColor(id, String(el.dataset.color));
+                                    if (siguiente) {
+                                        referenciaActiva[id] = siguiente;
+                                        renderReferencias(ref, 'referencias-' + id, id);
+                                        renderPartida(id, contenedorId, ref);
+                                    } else {
+                                        renderReferencias(ref, 'referencias-' + id, id, true);
+                                        setTimeout(() => {
+                                            alert('¡Felicidades! Has completado la partida.');
+                                        }, 100);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    contenedor.appendChild(btn);
+                });
+            });
+        }
+
+        // --- Renderizar partida propia (idéntico a renderPartida pero para 'propio') ---
+        function renderPartidaPropio(id, contenedorId, ref) {
+            // Reutiliza renderPartida pero con id 'propio'
+            renderPartida(id, contenedorId, ref);
+        }
+
+        // --- Renderizar referencias propias ---
+        function renderReferenciasPropio(ref, refDivId, partidaId, mostrarFinal = false) {
+            renderReferencias(ref, refDivId, partidaId, mostrarFinal);
+        }
+
+        // --- Cargar archivo propio ---
+        document.getElementById('file-propio').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    // Evalúa el archivo JS en un contexto seguro
+                    const code = ev.target.result;
+                    // Crea un objeto temporal para capturar las definiciones
+                    const temp = { referencias: {}, partidas: {} };
+                    // Sobrescribe window.referencias y window.partidas temporalmente
+                    const oldReferencias = window.referencias;
+                    const oldPartidas = window.partidas;
+                    window.referencias = temp.referencias;
+                    window.partidas = temp.partidas;
+                    // Evalúa el código (el archivo debe definir referencias y partidas)
+                    eval(code);
+                    // Restaura los originales
+                    window.referencias = oldReferencias;
+                    window.partidas = oldPartidas;
+                    // Busca la key de la partida cargada (toma la primera key)
+                    const keys = Object.keys(temp.partidas);
+                    if (keys.length === 0) throw new Error('No se encontró ninguna partida en el archivo.');
+                    const partidaId = keys[0];
+                    // Integra la referencia y partida al juego
+                    referencias['propio'] = temp.referencias[partidaId];
+                    partidas['propio'] = temp.partidas[partidaId];
+                    partidas['propio'].ref = referencias['propio'];
+                    referenciaActiva['propio'] = Object.keys(referencias['propio'])[0];
+                    referenciasCompletadas['propio'] = [];
+                    // Inicializa estado de pixeles revelados
+                    window._pixArtEstados = window._pixArtEstados || {};
+                    window._pixArtEstados['propio'] = partidas['propio'].matriz.map(fila => fila.map(() => false));
+                    // Renderiza
+                    renderReferenciasPropio(referencias['propio'], 'referencias-propio', 'propio');
+                    renderPartidaPropio('propio', 'juego-propio', referencias['propio']);
+                    showTab('propio');
+                } catch (err) {
+                    alert('Error al cargar el archivo: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // --- Inicializar todas las partidas y referencias ---
+        function renderAll() {
+            // Reiniciar referencias completadas y activas
+            Object.keys(referenciasCompletadas).forEach(k => referenciasCompletadas[k] = []);
+            referenciaActiva['p-001'] = '1';
+            referenciaActiva['p-002'] = '1';
+            referenciaActiva['p-003'] = '1';
+            referenciaActiva['p-004'] = '1';
+            referenciaActiva['p-005'] = '1';
+            referenciaActiva['p-006'] = '1';
+            referenciaActiva['p-007'] = '1';
+            referenciaActiva['p-008'] = '1';
+            referenciaActiva['p-009'] = '1';
+            referenciaActiva['p-010'] = '1';
+            referenciaActiva['p-011'] = '1';
+            referenciaActiva['p-012'] = '1';
+            referenciaActiva['p-013'] = '1';
+
+
+            renderReferencias(referencias['p-001'], 'referencias-p-001', 'p-001');
+            renderReferencias(referencias['p-002'], 'referencias-p-002', 'p-002');
+            renderReferencias(referencias['p-003'], 'referencias-p-003', 'p-003');
+            renderReferencias(referencias['p-004'], 'referencias-p-004', 'p-004');
+            renderReferencias(referencias['p-005'], 'referencias-p-005', 'p-005');
+            renderReferencias(referencias['p-006'], 'referencias-p-006', 'p-006');
+            renderReferencias(referencias['p-007'], 'referencias-p-007', 'p-007');
+            renderReferencias(referencias['p-008'], 'referencias-p-008', 'p-008');
+            renderReferencias(referencias['p-009'], 'referencias-p-009', 'p-009');
+            renderReferencias(referencias['p-010'], 'referencias-p-010', 'p-010');
+            renderReferencias(referencias['p-011'], 'referencias-p-011', 'p-011');
+            renderReferencias(referencias['p-012'], 'referencias-p-012', 'p-012');
+            renderReferencias(referencias['p-013'], 'referencias-p-013', 'p-013');
+            renderPartida('p-001', 'juego-p-001', referencias['p-001']);
+            renderPartida('p-002', 'juego-p-002', referencias['p-002']);
+            renderPartida('p-003', 'juego-p-003', referencias['p-003']);
+            renderPartida('p-004', 'juego-p-004', referencias['p-004']);
+            renderPartida('p-005', 'juego-p-005', referencias['p-005']);
+            renderPartida('p-006', 'juego-p-006', referencias['p-006']);
+            renderPartida('p-007', 'juego-p-007', referencias['p-007']);
+            renderPartida('p-008', 'juego-p-008', referencias['p-008']);
+            renderPartida('p-009', 'juego-p-009', referencias['p-009']);
+            renderPartida('p-010', 'juego-p-010', referencias['p-010']);
+            renderPartida('p-011', 'juego-p-011', referencias['p-011']);
+            renderPartida('p-012', 'juego-p-012', referencias['p-012']);
+            renderPartida('p-013', 'juego-p-013', referencias['p-013']);
+        }
+
+        // --- Actualizar la partida cuando se cambia la referencia activa ---
+        function setReferenciaActiva(partidaId, num) {
+            referenciaActiva[partidaId] = num;
+            if (partidaId === 'propio') {
+                renderReferenciasPropio(referencias[partidaId], 'referencias-propio', partidaId);
+                renderPartidaPropio(partidaId, 'juego-propio', referencias[partidaId]);
+            } else {
+                renderReferencias(referencias[partidaId], 'referencias-' + partidaId, partidaId);
+                renderPartida(partidaId, 'juego-' + partidaId, referencias[partidaId]);
+            }
+        }
+
+        renderAll();
+    </script>
+</body>
+</html>
